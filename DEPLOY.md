@@ -17,7 +17,7 @@ git commit -m "Echo — initial commit"
 gh repo create echo --public --source=. --push
 
 # Option B: create an empty repo at github.com/new named "echo", then:
-git remote add origin https://github.com/<your-username>/echo.git
+git remote add origin https://github.com/loxywastaken/echo.git
 git branch -M main
 git push -u origin main
 ```
@@ -70,17 +70,17 @@ npm run db:seed
 
 ```bash
 # after signing up on the live site:
-DATABASE_URL="<your-neon-url>" npm run make-admin -- <your-username>
+DATABASE_URL="<your-neon-url>" npm run make-admin -- loxywastaken
 ```
 
 ---
 
 ## One-click deploy button
 
-After your repo is on GitHub, this button (also in the README — replace `<your-username>`) lets anyone deploy their own copy:
+Once your repo is on GitHub at `github.com/loxywastaken/echo`, this button (also in the README) deploys it in one click:
 
 ```
-https://vercel.com/new/clone?repository-url=https://github.com/<your-username>/echo&env=DATABASE_URL,AUTH_SECRET,BLOB_READ_WRITE_TOKEN&project-name=echo&repository-name=echo
+https://vercel.com/new/clone?repository-url=https://github.com/loxywastaken/echo&env=DATABASE_URL,AUTH_SECRET,BLOB_READ_WRITE_TOKEN&project-name=echo&repository-name=echo
 ```
 
 ## Troubleshooting

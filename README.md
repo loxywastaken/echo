@@ -61,9 +61,9 @@ Open **http://localhost:3000**.
 
 See **[DEPLOY.md](./DEPLOY.md)** for the full 5-step guide (GitHub → Neon → Vercel → Blob → admin).
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/YOUR_USERNAME/echo&env=DATABASE_URL,AUTH_SECRET,BLOB_READ_WRITE_TOKEN&project-name=echo&repository-name=echo)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/loxywastaken/echo&env=DATABASE_URL,AUTH_SECRET,BLOB_READ_WRITE_TOKEN&project-name=echo&repository-name=echo)
 
-> Replace `YOUR_USERNAME` with your GitHub username after you push the repo.
+> This button points at `github.com/loxywastaken/echo` — it works once you've pushed the repo (step 1 of [DEPLOY.md](./DEPLOY.md)).
 
 ### Demo accounts (password: `password123`)
 
