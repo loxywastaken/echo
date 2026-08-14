@@ -58,11 +58,13 @@ export function extractMentions(text: string): string[] {
   return Array.from(new Set(matches.map((m) => m.slice(1).toLowerCase())));
 }
 
-/** Deterministic gradient avatar fallback from a string seed. */
+/** Deterministic monochrome gradient avatar fallback from a string seed. */
 export function gradientFor(seed: string): string {
   let h = 0;
   for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) % 360;
-  return `linear-gradient(135deg, hsl(${h} 70% 55%), hsl(${(h + 60) % 360} 70% 45%))`;
+  // Black & white theme: vary lightness only → a brushed-graphite avatar.
+  const l = 26 + (h % 26); // 26%–51%
+  return `linear-gradient(135deg, hsl(0 0% ${l + 13}%), hsl(0 0% ${Math.max(l - 8, 8)}%))`;
 }
 
 export function pluralize(n: number, singular: string, plural?: string) {

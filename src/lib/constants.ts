@@ -53,12 +53,12 @@ export const EXPLORE_CATEGORIES = [
 ] as const;
 
 export const STORY_BG_COLORS = [
-  "linear-gradient(135deg,#7c5cff,#22d3ee)",
-  "linear-gradient(135deg,#f43f5e,#f59e0b)",
-  "linear-gradient(135deg,#10b981,#3b82f6)",
-  "linear-gradient(135deg,#8b5cf6,#ec4899)",
-  "linear-gradient(135deg,#0ea5e9,#14b8a6)",
-  "#18181b",
+  "linear-gradient(135deg,#3a3a40,#0a0a0b)",
+  "linear-gradient(135deg,#2b2b30,#141416)",
+  "linear-gradient(135deg,#4a4a52,#1a1a1d)",
+  "linear-gradient(135deg,#1c1c20,#2e2e34)",
+  "linear-gradient(135deg,#5a5a62,#232327)",
+  "#101013",
 ];
 
 export const MAX_UPLOAD_MB = 50;

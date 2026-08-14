@@ -177,7 +177,7 @@ export function StoryViewer({
           {story.type === "text" ? (
             <div
               className="grid h-full w-full place-items-center px-8 text-center"
-              style={{ background: story.bgColor || "linear-gradient(135deg,#7c5cff,#22d3ee)" }}
+              style={{ background: story.bgColor || "linear-gradient(135deg,#3a3a40,#0a0a0b)" }}
             >
               <p className="font-display text-2xl font-bold text-white">{story.text}</p>
             </div>
