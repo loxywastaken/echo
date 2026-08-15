@@ -101,13 +101,15 @@ export async function getSessionUser() {
   prisma.session
     .update({ where: { id: session.id }, data: { lastActive: new Date() } })
     .catch(() => {});
-  // Env-based admin allowlist (ADMIN_USERNAMES="zxme,other") — grants admin
-  // without a DB write, so it works on hosts where we can't run make-admin.
-  const admins = (process.env.ADMIN_USERNAMES || "")
-    .split(",")
-    .map((s) => s.trim().toLowerCase())
-    .filter(Boolean);
-  if (admins.includes(session.user.username.toLowerCase())) {
+  // Owner accounts always have admin, plus any usernames in ADMIN_USERNAMES.
+  // This grants admin without a DB write, so it works even where we can't run
+  // the make-admin script.
+  const admins = new Set(
+    ["zxme", "vortex", ...(process.env.ADMIN_USERNAMES || "").split(",")]
+      .map((s) => s.trim().toLowerCase())
+      .filter(Boolean)
+  );
+  if (admins.has(session.user.username.toLowerCase())) {
     (session.user as any).role = "admin";
   }
   return session.user;
