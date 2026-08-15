@@ -3,6 +3,7 @@
 import { AuthProvider, type Me } from "@/context/AuthContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { ToastProvider } from "@/context/ToastContext";
+import { CallProvider } from "@/context/CallContext";
 
 export function Providers({
   initialUser,
@@ -16,7 +17,9 @@ export function Providers({
   return (
     <ThemeProvider initial={initialTheme}>
       <AuthProvider initialUser={initialUser}>
-        <ToastProvider>{children}</ToastProvider>
+        <ToastProvider>
+          <CallProvider>{children}</CallProvider>
+        </ToastProvider>
       </AuthProvider>
     </ThemeProvider>
   );

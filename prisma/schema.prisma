@@ -83,6 +83,9 @@ model User {
   messages      Message[]
   messageReactions MessageReaction[]
 
+  callsMade     Call[] @relation("Caller")
+  callsReceived Call[] @relation("Callee")
+
   notifications      Notification[] @relation("NotifRecipient")
   triggeredNotifs    Notification[] @relation("NotifActor")
 
@@ -489,4 +492,53 @@ model Report {
   createdAt      DateTime @default(now())
 
   @@index([status])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Calls (WebRTC signaling) & runtime app config
+// ─────────────────────────────────────────────────────────────────────────────
+
+// A 1:1 audio/video call. Signaling (SDP offer/answer + ICE) is exchanged
+// through these rows via short polling — no websocket server required.
+model Call {
+  id         String    @id @default(cuid())
+  callerId   String
+  caller     User      @relation("Caller", fields: [callerId], references: [id], onDelete: Cascade)
+  calleeId   String
+  callee     User      @relation("Callee", fields: [calleeId], references: [id], onDelete: Cascade)
+  // "ringing" | "active" | "ended" | "declined" | "missed"
+  status     String    @default("ringing")
+  kind       String    @default("video") // "video" | "audio"
+  offer      String?   // caller SDP offer (JSON)
+  answer     String?   // callee SDP answer (JSON)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  answeredAt DateTime?
+  endedAt    DateTime?
+
+  candidates IceCandidate[]
+
+  @@index([calleeId, status])
+  @@index([callerId, status])
+}
+
+// Trickle-ICE candidates, one row each, tagged with the sender so the other
+// party can poll for the ones it hasn't applied yet.
+model IceCandidate {
+  id        String   @id @default(cuid())
+  callId    String
+  call      Call     @relation(fields: [callId], references: [id], onDelete: Cascade)
+  fromId    String   // user id of the sender
+  candidate String   // JSON ICE candidate
+  createdAt DateTime @default(now())
+
+  @@index([callId, fromId])
+}
+
+// Singleton (id = "app") holding global runtime settings like maintenance mode.
+model AppConfig {
+  id                 String   @id @default("app")
+  maintenanceMode    Boolean  @default(false)
+  maintenanceMessage String?
+  updatedAt          DateTime @updatedAt
 }

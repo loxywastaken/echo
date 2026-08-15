@@ -8,13 +8,14 @@ import {
 } from "lucide-react";
 import { Avatar } from "@/components/ui/Avatar";
 import { Button } from "@/components/ui/Button";
-import { Spinner, EmptyState } from "@/components/ui/misc";
+import { Spinner, EmptyState, Toggle } from "@/components/ui/misc";
+import { Textarea } from "@/components/ui/Input";
 import { api } from "@/lib/client";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/context/ToastContext";
 import { cn, formatCount, timeAgo } from "@/lib/utils";
 
-const TABS = ["Overview", "Reports", "Users", "Content"] as const;
+const TABS = ["Overview", "Reports", "Users", "Content", "System"] as const;
 
 export function AdminClient() {
   const [tab, setTab] = useState<(typeof TABS)[number]>("Overview");
@@ -31,7 +32,7 @@ export function AdminClient() {
           </button>
         ))}
       </div>
-      {tab === "Overview" ? <Overview /> : tab === "Reports" ? <Reports /> : tab === "Users" ? <UsersTab /> : <ContentTab />}
+      {tab === "Overview" ? <Overview /> : tab === "Reports" ? <Reports /> : tab === "Users" ? <UsersTab /> : tab === "Content" ? <ContentTab /> : <SystemTab />}
     </div>
   );
 }
@@ -393,6 +394,70 @@ function ContentTab() {
           ))}
         </div>
       )}
+    </div>
+  );
+}
+
+function SystemTab() {
+  const { toast } = useToast();
+  const [maintenanceMode, setMaintenanceMode] = useState(false);
+  const [maintenanceMessage, setMaintenanceMessage] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    api
+      .get("/api/admin/config")
+      .then((c) => {
+        setMaintenanceMode(!!c.maintenanceMode);
+        setMaintenanceMessage(c.maintenanceMessage || "");
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  async function save() {
+    setSaving(true);
+    try {
+      await api.patch("/api/admin/config", { maintenanceMode, maintenanceMessage });
+      toast("Settings saved", "success");
+    } catch (e: any) {
+      toast(e?.message || "Failed to save", "error");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  if (loading) return <div className="grid place-items-center py-20"><Spinner /></div>;
+
+  return (
+    <div className="card p-5">
+      <p className="text-sm font-semibold">Maintenance mode</p>
+      <p className="mt-1 text-xs text-muted">
+        Enabling maintenance mode makes the site inaccessible to everyone except admins.
+      </p>
+
+      <div className="mt-4 flex items-center justify-between gap-3 rounded-xl bg-surface-2 p-3">
+        <div className="min-w-0">
+          <p className="text-sm font-semibold">Enable maintenance mode</p>
+          <p className="text-xs text-muted">Non-admins are redirected to the maintenance page.</p>
+        </div>
+        <Toggle checked={maintenanceMode} onChange={setMaintenanceMode} label="Maintenance mode" />
+      </div>
+
+      <div className="mt-4">
+        <Textarea
+          label="Maintenance message"
+          rows={3}
+          value={maintenanceMessage}
+          onChange={(e) => setMaintenanceMessage(e.target.value)}
+          placeholder="Vortex is down for scheduled maintenance. Please check back soon."
+        />
+      </div>
+
+      <div className="mt-4">
+        <Button variant="primary" onClick={save} loading={saving}>Save</Button>
+      </div>
     </div>
   );
 }
