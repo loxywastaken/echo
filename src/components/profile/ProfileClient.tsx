@@ -150,11 +150,11 @@ export function ProfileClient({ username }: { username: string }) {
 
       <div className="px-4 sm:px-6">
         {/* avatar + actions */}
-        <div className="flex items-end justify-between gap-3">
-          <div className="-mt-12 rounded-full bg-bg p-1 shadow-card sm:-mt-14">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between sm:gap-3">
+          <div className="-mt-12 w-fit rounded-full bg-bg p-1 shadow-card sm:-mt-14">
             <Avatar src={profile.avatar} name={profile.displayName} size={108} />
           </div>
-          <div className="flex flex-wrap justify-end gap-2 py-3">
+          <div className="flex flex-wrap gap-2 sm:justify-end sm:py-3">
             {isSelf ? (
               <>
                 <Button size="sm" variant="subtle" onClick={() => setEdit(true)}>Edit profile</Button>

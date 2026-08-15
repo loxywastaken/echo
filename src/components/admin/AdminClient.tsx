@@ -21,12 +21,12 @@ export function AdminClient() {
   const [tab, setTab] = useState<(typeof TABS)[number]>("Overview");
   return (
     <div className="mx-auto max-w-5xl px-4 py-6">
-      <div className="mb-6 flex gap-1 rounded-xl bg-surface-2 p-1">
+      <div className="no-scrollbar mb-6 flex gap-1 overflow-x-auto rounded-xl bg-surface-2 p-1">
         {TABS.map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
-            className={cn("press flex-1 rounded-lg py-2 text-sm font-semibold", tab === t ? "bg-accent-gradient text-white" : "text-muted hover:text-text")}
+            className={cn("press shrink-0 whitespace-nowrap rounded-lg px-4 py-2 text-sm font-semibold sm:flex-1", tab === t ? "bg-accent-gradient text-white" : "text-muted hover:text-text")}
           >
             {t}
           </button>

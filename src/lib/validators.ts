@@ -5,7 +5,7 @@ export const RESERVED_USERNAMES = new Set([
   "explore", "clips", "messages", "notifications", "create", "settings",
   "admin", "guidelines", "login", "signup", "logout", "forgot-password",
   "reset-password", "verify-email", "api", "uploads", "u", "home", "about",
-  "help", "support", "echo", "vortex",
+  "help", "support", "echo",
 ]);
 
 export const usernameSchema = z

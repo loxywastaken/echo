@@ -16,7 +16,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <Sidebar onCreate={() => setCreate(true)} onSearch={() => setSearch(true)} />
       <div className="flex min-w-0 flex-1 flex-col">
         <TopBar onSearch={() => setSearch(true)} />
-        <main className="min-w-0 flex-1 pb-20 md:pb-0">{children}</main>
+        <main className="min-w-0 flex-1 overflow-x-hidden pb-20 md:pb-0">{children}</main>
         <MobileNav onCreate={() => setCreate(true)} />
       </div>
       <CreateModal open={create} onClose={() => setCreate(false)} />

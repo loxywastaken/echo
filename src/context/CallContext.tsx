@@ -397,7 +397,7 @@ function CallUI({
         )}
       </div>
 
-      <div className="flex items-center justify-center gap-5 bg-black/95 py-6">
+      <div className="safe-bottom flex items-center justify-center gap-5 bg-black/95 py-6">
         <button
           onClick={onToggleMute}
           className={cn("press grid h-14 w-14 place-items-center rounded-full text-white", muted ? "bg-white text-black" : "bg-white/15")}
