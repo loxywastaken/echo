@@ -69,12 +69,15 @@ export function CommentsModal({
 
   async function del(c: Comment, parentId?: string) {
     await api.del(`/api/comments/${c.id}`).catch(() => {});
+    // Deleting a top-level comment cascades its replies server-side, so remove
+    // those from the count too.
+    const removed = parentId ? 1 : 1 + (c.replies?.length ?? 0);
     setComments((cs) =>
       parentId
         ? cs.map((p) => (p.id === parentId ? { ...p, replies: p.replies?.filter((r) => r.id !== c.id) } : p))
         : cs.filter((x) => x.id !== c.id)
     );
-    onCountChange?.(Math.max(0, total - 1));
+    onCountChange?.(Math.max(0, total - removed));
   }
 
   return (

@@ -200,7 +200,7 @@ export function CreateModal({ open, onClose }: { open: boolean; onClose: () => v
             </div>
             {hasVideo && (
               <div className="flex items-center justify-between rounded-xl px-1 py-1">
-                <span className="flex items-center gap-1.5 text-sm text-muted"><Film size={15} /> Share as an Echo Clip</span>
+                <span className="flex items-center gap-1.5 text-sm text-muted"><Film size={15} /> Share as a Vortex Clip</span>
                 <Toggle checked={asClip} onChange={setAsClip} />
               </div>
             )}

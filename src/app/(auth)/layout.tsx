@@ -18,10 +18,10 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         <Logo size={40} />
         <div>
           <h1 className="max-w-md font-display text-5xl font-extrabold leading-tight tracking-tight">
-            Share what <span className="text-gradient">echoes</span>.
+            Dive into the <span className="text-gradient">vortex</span>.
           </h1>
           <p className="mt-4 max-w-sm text-lg text-muted">
-            A calmer place for the moments worth repeating. Post, follow, message, and discover —
+            A calmer place for the moments worth sharing. Post, follow, message, and discover —
             beautifully.
           </p>
         </div>

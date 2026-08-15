@@ -3,7 +3,7 @@ import { route, ok } from "@/lib/api";
 import { getSessionUser } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { postInclude, serializePost } from "@/lib/serialize";
-import { invisibleUserIds } from "@/lib/social";
+import { invisibleUserIds, visiblePostWhere } from "@/lib/social";
 
 export const dynamic = "force-dynamic";
 
@@ -21,7 +21,10 @@ export const GET = route(async (_req: NextRequest, { params }: Ctx) => {
   if (!hashtag) return ok({ tag, count: 0, posts: [] });
 
   const links = await prisma.postHashtag.findMany({
-    where: { hashtagId: hashtag.id, post: { status: "published", authorId: { notIn: hidden } } },
+    where: {
+      hashtagId: hashtag.id,
+      post: { status: "published", authorId: { notIn: hidden }, ...(await visiblePostWhere(viewer?.id ?? null)) },
+    },
     include: { post: { include: postInclude(viewer?.id) } },
     orderBy: { post: { createdAt: "desc" } },
     take: 30,

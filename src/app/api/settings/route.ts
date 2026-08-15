@@ -3,6 +3,7 @@ import { route, ok, bad } from "@/lib/api";
 import { requireUser, hashPassword, verifyPassword } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { settingsSchema, firstError } from "@/lib/validators";
+import { acceptAllPendingRequests } from "@/lib/social";
 
 export const dynamic = "force-dynamic";
 
@@ -44,6 +45,8 @@ export const PATCH = route(async (req: NextRequest) => {
   }
 
   const updated = await prisma.user.update({ where: { id: me.id }, data: { ...data } });
+  // Switching to public here (as on the profile route) auto-accepts pending requests.
+  if (data.isPrivate === false) await acceptAllPendingRequests(me.id);
   return ok({ ok: true, theme: updated.theme });
 });
 

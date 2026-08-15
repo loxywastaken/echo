@@ -202,7 +202,7 @@ function AppearanceSection({ theme, onUpdate }: { theme: string; onUpdate: (p: S
   ];
   return (
     <Card title="Appearance">
-      <p className="mb-3 text-sm text-muted">Choose how Echo looks to you.</p>
+      <p className="mb-3 text-sm text-muted">Choose how Vortex looks to you.</p>
       <div className="grid grid-cols-3 gap-3">
         {opts.map((o) => (
           <button

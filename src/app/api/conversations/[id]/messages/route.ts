@@ -62,6 +62,28 @@ export const POST = route(async (req: NextRequest, { params }: Ctx) => {
   const d = parsed.data;
   if (!d.body?.trim() && !d.mediaUrl) return bad("Message can't be empty.");
 
+  const convo = await prisma.conversation.findUnique({
+    where: { id: params.id },
+    select: { isGroup: true },
+  });
+  const others = await prisma.conversationMember.findMany({
+    where: { conversationId: params.id, userId: { not: me.id } },
+    select: { userId: true },
+  });
+  const otherIds = others.map((o) => o.userId);
+  // In a 1:1, don't allow messaging someone who has blocked you (or whom you've blocked).
+  if (!convo?.isGroup && otherIds.length) {
+    const blocked = await prisma.block.findFirst({
+      where: {
+        OR: [
+          { blockerId: me.id, blockedId: { in: otherIds } },
+          { blockerId: { in: otherIds }, blockedId: me.id },
+        ],
+      },
+    });
+    if (blocked) return forbidden();
+  }
+
   const [message] = await prisma.$transaction([
     prisma.message.create({
       data: {
@@ -82,13 +104,9 @@ export const POST = route(async (req: NextRequest, { params }: Ctx) => {
   ]);
 
   // Notify the other members.
-  const others = await prisma.conversationMember.findMany({
-    where: { conversationId: params.id, userId: { not: me.id } },
-    select: { userId: true },
-  });
   await Promise.all(
-    others.map((o) =>
-      notify({ recipientId: o.userId, actorId: me.id, type: NOTIF.MESSAGE, message: d.body?.slice(0, 60) })
+    otherIds.map((userId) =>
+      notify({ recipientId: userId, actorId: me.id, type: NOTIF.MESSAGE, message: d.body?.slice(0, 60) })
     )
   );
 

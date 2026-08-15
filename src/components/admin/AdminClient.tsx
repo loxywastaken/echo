@@ -3,16 +3,18 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
-  Users2, ImageIcon, MessageSquare, Flag, Clapperboard, Ban, PauseCircle, Search, Trash2, Check, X, BadgeCheck,
+  Users2, ImageIcon, MessageSquare, Flag, Clapperboard, Ban, PauseCircle, Search, Trash2,
+  Check, X, BadgeCheck, Shield, ShieldOff, Heart,
 } from "lucide-react";
 import { Avatar } from "@/components/ui/Avatar";
 import { Button } from "@/components/ui/Button";
 import { Spinner, EmptyState } from "@/components/ui/misc";
 import { api } from "@/lib/client";
+import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/context/ToastContext";
 import { cn, formatCount, timeAgo } from "@/lib/utils";
 
-const TABS = ["Overview", "Reports", "Users"] as const;
+const TABS = ["Overview", "Reports", "Users", "Content"] as const;
 
 export function AdminClient() {
   const [tab, setTab] = useState<(typeof TABS)[number]>("Overview");
@@ -29,7 +31,7 @@ export function AdminClient() {
           </button>
         ))}
       </div>
-      {tab === "Overview" ? <Overview /> : tab === "Reports" ? <Reports /> : <UsersTab />}
+      {tab === "Overview" ? <Overview /> : tab === "Reports" ? <Reports /> : tab === "Users" ? <UsersTab /> : <ContentTab />}
     </div>
   );
 }
@@ -44,13 +46,14 @@ function Overview() {
   if (!data) return <div className="grid place-items-center py-20"><Spinner /></div>;
 
   const cards = [
-    { label: "Users", value: data.stats.users, icon: Users2, color: "text-accent" },
-    { label: "Posts", value: data.stats.posts, icon: ImageIcon, color: "text-accent-2" },
-    { label: "Comments", value: data.stats.comments, icon: MessageSquare, color: "text-success" },
-    { label: "Open reports", value: data.stats.openReports, icon: Flag, color: "text-danger" },
-    { label: "Active stories", value: data.stats.activeStories, icon: Clapperboard, color: "text-warn" },
-    { label: "Suspended", value: data.stats.suspended, icon: PauseCircle, color: "text-warn" },
-    { label: "Banned", value: data.stats.banned, icon: Ban, color: "text-danger" },
+    { label: "Users", value: data.stats.users, icon: Users2 },
+    { label: "Posts", value: data.stats.posts, icon: ImageIcon },
+    { label: "Comments", value: data.stats.comments, icon: MessageSquare },
+    { label: "Verified", value: data.stats.verified, icon: BadgeCheck },
+    { label: "Open reports", value: data.stats.openReports, icon: Flag },
+    { label: "Active stories", value: data.stats.activeStories, icon: Clapperboard },
+    { label: "Suspended", value: data.stats.suspended, icon: PauseCircle },
+    { label: "Banned", value: data.stats.banned, icon: Ban },
   ];
   const max = Math.max(1, ...data.series.map((s: any) => Math.max(s.posts, s.users)));
 
@@ -59,7 +62,7 @@ function Overview() {
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         {cards.map((c) => (
           <div key={c.label} className="card p-4">
-            <c.icon size={20} className={c.color} />
+            <c.icon size={20} className="text-muted" />
             <p className="mt-2 font-display text-2xl font-bold">{formatCount(c.value)}</p>
             <p className="text-xs text-muted">{c.label}</p>
           </div>
@@ -211,11 +214,17 @@ function Reports() {
   );
 }
 
+const USER_FILTERS = ["all", "verified", "admins", "suspended", "banned"] as const;
+type UserFilter = (typeof USER_FILTERS)[number];
+
 function UsersTab() {
   const { toast } = useToast();
+  const { user: me } = useAuth();
   const [q, setQ] = useState("");
+  const [filter, setFilter] = useState<UserFilter>("all");
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [busy, setBusy] = useState<string | null>(null);
 
   async function load() {
     setLoading(true);
@@ -230,12 +239,123 @@ function UsersTab() {
   }, [q]);
 
   async function act(id: string, action: string) {
+    setBusy(id + action);
     try {
       await api.patch("/api/admin/users", { id, action });
       toast("Done", "success");
-      load();
+      await load();
     } catch (e: any) {
       toast(e?.message || "Failed", "error");
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  const shown = users.filter((u) =>
+    filter === "all" ? true :
+    filter === "verified" ? u.isVerified :
+    filter === "admins" ? u.role === "admin" :
+    u.status === filter
+  );
+
+  return (
+    <div>
+      <div className="mb-3 flex items-center gap-2 rounded-xl bg-surface-2 px-3">
+        <Search size={16} className="text-faint" />
+        <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search users by name, @username or email" className="flex-1 bg-transparent py-2.5 text-sm outline-none" />
+      </div>
+      <div className="mb-4 flex flex-wrap gap-1.5">
+        {USER_FILTERS.map((f) => (
+          <button
+            key={f}
+            onClick={() => setFilter(f)}
+            className={cn(
+              "press rounded-full px-3 py-1 text-xs font-semibold capitalize",
+              filter === f ? "bg-accent-gradient text-white" : "bg-surface-2 text-muted hover:text-text"
+            )}
+          >
+            {f}
+          </button>
+        ))}
+      </div>
+      {loading ? (
+        <div className="grid place-items-center py-16"><Spinner /></div>
+      ) : (
+        <div className="space-y-2">
+          {shown.map((u) => {
+            const isSelf = me?.id === u.id;
+            const isAdmin = u.role === "admin";
+            return (
+              <div key={u.id} className="card flex flex-wrap items-center gap-3 p-3">
+                <Link href={`/${u.username}`}><Avatar src={u.avatar} name={u.displayName} size={44} /></Link>
+                <div className="min-w-0 flex-1">
+                  <p className="flex flex-wrap items-center gap-1 text-sm font-semibold">
+                    {u.username}
+                    {u.isVerified && <BadgeCheck size={14} className="text-accent" />}
+                    {isAdmin && <span className="rounded bg-accent/15 px-1.5 text-xs text-accent">admin</span>}
+                    {isSelf && <span className="rounded bg-surface-2 px-1.5 text-xs text-muted">you</span>}
+                    <span className={cn("rounded px-1.5 text-xs", u.status === "active" ? "bg-success/15 text-success" : u.status === "suspended" ? "bg-warn/15 text-warn" : "bg-danger/15 text-danger")}>{u.status}</span>
+                  </p>
+                  <p className="truncate text-xs text-faint">{u.email} · {formatCount(u.followers)} followers · {u.posts} posts</p>
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  <Button size="sm" variant="ghost" loading={busy === u.id + (u.isVerified ? "unverify" : "verify")} onClick={() => act(u.id, u.isVerified ? "unverify" : "verify")}>
+                    {u.isVerified ? "Unverify" : "Verify"}
+                  </Button>
+                  {!isSelf && (isAdmin ? (
+                    <Button size="sm" variant="subtle" loading={busy === u.id + "removeAdmin"} onClick={() => act(u.id, "removeAdmin")}>
+                      <ShieldOff size={14} /> Remove admin
+                    </Button>
+                  ) : (
+                    <>
+                      <Button size="sm" variant="subtle" loading={busy === u.id + "makeAdmin"} onClick={() => act(u.id, "makeAdmin")}>
+                        <Shield size={14} /> Make admin
+                      </Button>
+                      {u.status !== "active" && <Button size="sm" variant="subtle" onClick={() => act(u.id, "activate")}>Reactivate</Button>}
+                      {u.status === "active" && <Button size="sm" variant="subtle" onClick={() => act(u.id, "suspend")}>Suspend</Button>}
+                      {u.status !== "banned" && <Button size="sm" variant="danger" onClick={() => act(u.id, "ban")}>Ban</Button>}
+                    </>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+          {shown.length === 0 && <EmptyState icon={<Users2 size={22} />} title="No users found" />}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ContentTab() {
+  const { toast } = useToast();
+  const [q, setQ] = useState("");
+  const [posts, setPosts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [busy, setBusy] = useState<string | null>(null);
+
+  async function load() {
+    setLoading(true);
+    const r = await api.get(`/api/admin/posts?q=${encodeURIComponent(q)}`).catch(() => ({ posts: [] }));
+    setPosts(r.posts);
+    setLoading(false);
+  }
+  useEffect(() => {
+    const t = setTimeout(load, 250);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [q]);
+
+  async function remove(id: string) {
+    setBusy(id);
+    try {
+      await api.del(`/api/admin/posts/${id}`);
+      setPosts((ps) => ps.map((p) => (p.id === id ? { ...p, status: "removed" } : p)));
+      toast("Post removed", "success");
+    } catch (e: any) {
+      toast(e?.message || "Failed", "error");
+    } finally {
+      setBusy(null);
     }
   }
 
@@ -243,35 +363,34 @@ function UsersTab() {
     <div>
       <div className="mb-4 flex items-center gap-2 rounded-xl bg-surface-2 px-3">
         <Search size={16} className="text-faint" />
-        <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search users by name, @username or email" className="flex-1 bg-transparent py-2.5 text-sm outline-none" />
+        <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search posts by caption or @author" className="flex-1 bg-transparent py-2.5 text-sm outline-none" />
       </div>
       {loading ? (
         <div className="grid place-items-center py-16"><Spinner /></div>
+      ) : posts.length === 0 ? (
+        <EmptyState icon={<ImageIcon size={22} />} title="No posts found" />
       ) : (
-        <div className="space-y-2">
-          {users.map((u) => (
-            <div key={u.id} className="card flex flex-wrap items-center gap-3 p-3">
-              <Link href={`/${u.username}`}><Avatar src={u.avatar} name={u.displayName} size={44} /></Link>
+        <div className="grid gap-2 sm:grid-cols-2">
+          {posts.map((p) => (
+            <div key={p.id} className="card flex items-center gap-3 p-3">
+              <Link href={`/p/${p.id}`} className="h-14 w-14 shrink-0 overflow-hidden rounded-lg bg-surface-2">
+                {p.thumb && /* eslint-disable-next-line @next/next/no-img-element */ <img src={p.thumb} alt="" className="h-full w-full object-cover" />}
+              </Link>
               <div className="min-w-0 flex-1">
-                <p className="flex items-center gap-1 text-sm font-semibold">
-                  {u.username}
-                  {u.isVerified && <BadgeCheck size={14} className="text-accent" />}
-                  {u.role === "admin" && <span className="rounded bg-accent/15 px-1.5 text-xs text-accent">admin</span>}
-                  <span className={cn("rounded px-1.5 text-xs", u.status === "active" ? "bg-success/15 text-success" : u.status === "suspended" ? "bg-warn/15 text-warn" : "bg-danger/15 text-danger")}>{u.status}</span>
+                <p className="truncate text-sm">{p.caption || "(no caption)"}</p>
+                <p className="truncate text-xs text-faint">
+                  @{p.author?.username} · <Heart size={11} className="inline" /> {formatCount(p.likes)} · <MessageSquare size={11} className="inline" /> {formatCount(p.comments)} · {timeAgo(p.createdAt)}
+                  {p.isClip && <span className="text-muted"> · clip</span>}
+                  {p.status === "removed" && <span className="text-danger"> · removed</span>}
                 </p>
-                <p className="truncate text-xs text-faint">{u.email} · {formatCount(u.followers)} followers · {u.posts} posts</p>
               </div>
-              {u.role !== "admin" && (
-                <div className="flex flex-wrap gap-1.5">
-                  {u.status !== "active" && <Button size="sm" variant="subtle" onClick={() => act(u.id, "activate")}>Reactivate</Button>}
-                  {u.status === "active" && <Button size="sm" variant="subtle" onClick={() => act(u.id, "suspend")}>Suspend</Button>}
-                  {u.status !== "banned" && <Button size="sm" variant="danger" onClick={() => act(u.id, "ban")}>Ban</Button>}
-                  <Button size="sm" variant="ghost" onClick={() => act(u.id, u.isVerified ? "unverify" : "verify")}>{u.isVerified ? "Unverify" : "Verify"}</Button>
-                </div>
+              {p.status === "removed" ? (
+                <span className="rounded-lg bg-danger/15 px-2.5 py-1 text-xs font-semibold text-danger">Removed</span>
+              ) : (
+                <Button size="sm" variant="danger" loading={busy === p.id} onClick={() => remove(p.id)}><Trash2 size={14} /> Remove</Button>
               )}
             </div>
           ))}
-          {users.length === 0 && <EmptyState icon={<Users2 size={22} />} title="No users found" />}
         </div>
       )}
     </div>

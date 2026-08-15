@@ -3,7 +3,7 @@ import { route, ok } from "@/lib/api";
 import { requireUser } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { postInclude, serializePost } from "@/lib/serialize";
-import { invisibleUserIds } from "@/lib/social";
+import { invisibleUserIds, visiblePostWhere } from "@/lib/social";
 import { PAGE_SIZE } from "@/lib/constants";
 
 export const dynamic = "force-dynamic";
@@ -25,9 +25,10 @@ export const GET = route(async (req: NextRequest) => {
   const authorIds = [user.id, ...followingIds].filter((id) => !hidden.includes(id));
 
   // Primary source: followed + self. Backfill with everyone (minus hidden) if sparse.
+  // The backfill must not expose private accounts the viewer doesn't follow.
   const useGlobal = followingIds.length === 0;
   const where: any = useGlobal
-    ? { status: "published", isClip: false, authorId: { notIn: hidden } }
+    ? { status: "published", isClip: false, authorId: { notIn: hidden }, ...(await visiblePostWhere(user.id)) }
     : { status: "published", isClip: false, authorId: { in: authorIds } };
 
   const posts = await prisma.post.findMany({

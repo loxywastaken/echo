@@ -108,7 +108,7 @@ export function SearchModal({ open, onClose }: { open: boolean; onClose: () => v
                   ))}
                 </>
               ) : (
-                <p className="px-2 py-8 text-center text-sm text-faint">Search Echo for people, hashtags and places.</p>
+                <p className="px-2 py-8 text-center text-sm text-faint">Search Vortex for people, hashtags and places.</p>
               )}
             </div>
           ) : loading ? (

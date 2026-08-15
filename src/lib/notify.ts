@@ -1,6 +1,7 @@
 import "server-only";
 import { prisma } from "./db";
 import { NOTIF } from "./constants";
+import { isFollowing, isBlockedBetween } from "./social";
 
 type NotifInput = {
   recipientId: string;
@@ -55,12 +56,27 @@ export async function notify(input: NotifInput) {
 /** Fan a mention/tag notification out to a set of usernames. */
 export async function notifyUsernames(
   usernames: string[],
-  base: Omit<NotifInput, "recipientId">
+  base: Omit<NotifInput, "recipientId">,
+  opts?: { prefField?: "allowMentions" | "allowTags" }
 ) {
   if (usernames.length === 0) return;
   const users = await prisma.user.findMany({
     where: { username: { in: usernames.map((u) => u.toLowerCase()) } },
-    select: { id: true },
+    select: { id: true, allowMentions: true, allowTags: true },
   });
-  await Promise.all(users.map((u) => notify({ ...base, recipientId: u.id })));
+  await Promise.all(
+    users.map(async (u) => {
+      if (base.actorId) {
+        // Never notify a user who has blocked (or is blocked by) the actor.
+        if (await isBlockedBetween(base.actorId, u.id)) return;
+        // Honour the recipient's mention/tag preference.
+        if (opts?.prefField) {
+          const pref = (u as any)[opts.prefField] as string;
+          if (pref === "none") return;
+          if (pref === "followers" && !(await isFollowing(base.actorId, u.id))) return;
+        }
+      }
+      await notify({ ...base, recipientId: u.id });
+    })
+  );
 }

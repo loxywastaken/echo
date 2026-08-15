@@ -14,9 +14,22 @@ export const POST = route(async (req: NextRequest, { params }: Ctx) => {
   if (!story) return notFound("Story not found");
   if (story.authorId === me.id) return bad("You can't react to your own story.");
 
-  await prisma.storyReaction.create({
-    data: { storyId: story.id, userId: me.id, emoji: emoji || "❤️" },
+  const chosen = emoji || "❤️";
+  // Dedupe by (storyId, userId): one reaction per user. Update the emoji in place
+  // on repeat taps and only notify the author when the reaction is newly created.
+  const existing = await prisma.storyReaction.findFirst({
+    where: { storyId: story.id, userId: me.id },
   });
-  await notify({ recipientId: story.authorId, actorId: me.id, type: NOTIF.LIKE, message: `reacted ${emoji || "❤️"} to your story` });
+  if (existing) {
+    if (existing.emoji !== chosen) {
+      await prisma.storyReaction.update({ where: { id: existing.id }, data: { emoji: chosen } });
+    }
+    return ok({ ok: true });
+  }
+
+  await prisma.storyReaction.create({
+    data: { storyId: story.id, userId: me.id, emoji: chosen },
+  });
+  await notify({ recipientId: story.authorId, actorId: me.id, type: NOTIF.LIKE, message: `reacted ${chosen} to your story` });
   return ok({ ok: true });
 });

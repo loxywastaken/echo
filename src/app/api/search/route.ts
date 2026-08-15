@@ -3,7 +3,7 @@ import { route, ok } from "@/lib/api";
 import { getSessionUser } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { publicUser } from "@/lib/serialize";
-import { invisibleUserIds } from "@/lib/social";
+import { invisibleUserIds, visiblePostWhere } from "@/lib/social";
 
 export const dynamic = "force-dynamic";
 
@@ -18,6 +18,8 @@ export const GET = route(async (req: NextRequest) => {
 
   const hidden = viewer ? await invisibleUserIds(viewer.id) : [];
   const wantAll = type === "all";
+  // Restrict post/location results to content the viewer is allowed to see.
+  const postVisibility = await visiblePostWhere(viewer?.id ?? null);
 
   const [people, hashtags, posts, locations] = await Promise.all([
     wantAll || type === "people"
@@ -44,7 +46,7 @@ export const GET = route(async (req: NextRequest) => {
       : Promise.resolve([]),
     wantAll || type === "posts"
       ? prisma.post.findMany({
-          where: { status: "published", authorId: { notIn: hidden }, caption: { contains: q } },
+          where: { status: "published", authorId: { notIn: hidden }, caption: { contains: q }, ...postVisibility },
           include: { media: { take: 1, orderBy: { position: "asc" } } },
           orderBy: { createdAt: "desc" },
           take: wantAll ? 9 : 30,
@@ -52,7 +54,7 @@ export const GET = route(async (req: NextRequest) => {
       : Promise.resolve([]),
     wantAll || type === "locations"
       ? prisma.post.findMany({
-          where: { status: "published", location: { contains: q } },
+          where: { status: "published", location: { contains: q }, authorId: { notIn: hidden }, ...postVisibility },
           select: { location: true },
           distinct: ["location"],
           take: wantAll ? 6 : 30,

@@ -1,15 +1,15 @@
 import { LogoMark } from "@/components/Logo";
 import { Heart, Shield, Users, Flag, EyeOff, Sparkles } from "lucide-react";
 
-export const metadata = { title: "Community Guidelines — Echo" };
+export const metadata = { title: "Community Guidelines — Vortex" };
 
 const rules = [
-  { icon: Heart, title: "Be kind", body: "Treat others with respect. Harassment, hate speech, bullying, and threats have no place on Echo." },
+  { icon: Heart, title: "Be kind", body: "Treat others with respect. Harassment, hate speech, bullying, and threats have no place on Vortex." },
   { icon: EyeOff, title: "Keep it safe", body: "No nudity, sexual content involving minors, graphic violence, or content that promotes self-harm." },
   { icon: Shield, title: "Stay authentic", body: "Be yourself. Don't impersonate others, spread misinformation, or run scams and spam." },
   { icon: Users, title: "Respect privacy", body: "Don't share others' private information without consent, and honour people's boundaries." },
   { icon: Flag, title: "Report, don't retaliate", body: "See something wrong? Use the report tools. Our team reviews reports and takes action." },
-  { icon: Sparkles, title: "Share what echoes", body: "Post the moments worth repeating — creativity, community, and genuine connection." },
+  { icon: Sparkles, title: "Share what matters", body: "Post the moments worth sharing — creativity, community, and genuine connection." },
 ];
 
 export default function GuidelinesPage() {
@@ -18,7 +18,7 @@ export default function GuidelinesPage() {
       <div className="mb-8 text-center">
         <div className="mx-auto mb-4 w-fit"><LogoMark size={48} /></div>
         <h1 className="font-display text-3xl font-extrabold">Community Guidelines</h1>
-        <p className="mt-2 text-muted">The principles that keep Echo a place worth coming back to.</p>
+        <p className="mt-2 text-muted">The principles that keep Vortex a place worth coming back to.</p>
       </div>
 
       <div className="space-y-3">

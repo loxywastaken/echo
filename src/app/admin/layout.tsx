@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { getSessionUser } from "@/lib/auth";
 import { Logo } from "@/components/Logo";
+import { BRAND } from "@/lib/constants";
 import { ArrowLeft } from "lucide-react";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -14,7 +15,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       <header className="sticky top-0 z-40 flex items-center justify-between border-b border-border glass px-5 py-3">
         <div className="flex items-center gap-3">
           <Logo size={26} withWord={false} />
-          <span className="font-display text-lg font-bold">Echo <span className="text-gradient">Admin</span></span>
+          <span className="font-display text-lg font-bold">{BRAND.name} <span className="text-gradient">Admin</span></span>
         </div>
         <Link href="/" className="press flex items-center gap-1.5 text-sm text-muted hover:text-text">
           <ArrowLeft size={16} /> Back to app

@@ -7,6 +7,7 @@ import { extractHashtags, extractMentions } from "@/lib/utils";
 import { postInclude, serializePost } from "@/lib/serialize";
 import { notify, notifyUsernames } from "@/lib/notify";
 import { NOTIF } from "@/lib/constants";
+import { isFollowing, isBlockedBetween } from "@/lib/social";
 
 export const dynamic = "force-dynamic";
 
@@ -48,20 +49,24 @@ export const POST = route(async (req: NextRequest) => {
   if (d.taggedUsernames.length) {
     const tagged = await prisma.user.findMany({
       where: { username: { in: d.taggedUsernames.map((u) => u.toLowerCase()) } },
-      select: { id: true },
+      select: { id: true, allowTags: true },
     });
     for (const t of tagged) {
       await prisma.postTag.create({ data: { postId: post.id, userId: t.id } }).catch(() => {});
+      // Gate the tag notification on the target's preference + block status.
+      if (t.allowTags === "none") continue;
+      if (t.allowTags === "followers" && !(await isFollowing(user.id, t.id))) continue;
+      if (await isBlockedBetween(user.id, t.id)) continue;
       await notify({ recipientId: t.id, actorId: user.id, type: NOTIF.TAG, postId: post.id });
     }
   }
 
   // Mentions in caption.
-  await notifyUsernames(extractMentions(d.caption || ""), {
-    actorId: user.id,
-    type: NOTIF.MENTION,
-    postId: post.id,
-  });
+  await notifyUsernames(
+    extractMentions(d.caption || ""),
+    { actorId: user.id, type: NOTIF.MENTION, postId: post.id },
+    { prefField: "allowMentions" }
+  );
 
   const full = await prisma.post.findUnique({
     where: { id: post.id },

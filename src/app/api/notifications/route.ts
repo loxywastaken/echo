@@ -16,8 +16,27 @@ export const GET = route(async () => {
     orderBy: { createdAt: "desc" },
     take: 60,
   });
+
+  // Which actors the viewer already follows (so follow notifications can show
+  // the correct "Following" vs "Follow" state).
+  const actorIds = Array.from(
+    new Set(notifications.map((n) => n.actorId).filter((id): id is string => !!id))
+  );
+  const following = actorIds.length
+    ? await prisma.follow.findMany({
+        where: { followerId: me.id, followingId: { in: actorIds } },
+        select: { followingId: true },
+      })
+    : [];
+  const followingSet = new Set(following.map((f) => f.followingId));
+
   const unread = notifications.filter((n) => !n.read).length;
-  return ok({ notifications: notifications.map(serializeNotification), unread });
+  return ok({
+    notifications: notifications.map((n) =>
+      serializeNotification(n, { followsActor: n.actorId ? followingSet.has(n.actorId) : false })
+    ),
+    unread,
+  });
 });
 
 // Mark all as read.

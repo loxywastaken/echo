@@ -123,29 +123,35 @@ export function ProfileClient({ username }: { username: string }) {
   const locked = profile.isPrivate && !canView && !isSelf;
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-5 sm:py-8">
-      {/* header */}
-      <header className="flex flex-col gap-5 sm:flex-row sm:items-center sm:gap-10">
-        <div className="flex items-center gap-5 sm:block">
-          <Avatar src={profile.avatar} name={profile.displayName} size={88} className="sm:h-36 sm:w-36" />
+    <div className="mx-auto max-w-4xl pb-10">
+      {/* banner */}
+      <div className="sm:px-4 sm:pt-4">
+        <div className="h-36 w-full overflow-hidden bg-surface-2 sm:h-56 sm:rounded-2xl">
+          {profile.cover ? (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img src={profile.cover} alt="" className="h-full w-full object-cover" />
+          ) : (
+            <div className="h-full w-full bg-gradient-to-br from-elevated via-surface-2 to-bg" />
+          )}
         </div>
+      </div>
 
-        <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-3">
-            <h1 className="flex items-center gap-1.5 text-xl font-semibold">
-              {profile.username}
-              {profile.isVerified && <VerifiedBadge size={18} />}
-              {profile.isPrivate && <Lock size={15} className="text-muted" />}
-            </h1>
+      <div className="px-4 sm:px-6">
+        {/* avatar + actions */}
+        <div className="flex items-end justify-between gap-3">
+          <div className="-mt-12 rounded-full bg-bg p-1 shadow-card sm:-mt-14">
+            <Avatar src={profile.avatar} name={profile.displayName} size={108} />
+          </div>
+          <div className="flex flex-wrap justify-end gap-2 py-3">
             {isSelf ? (
-              <div className="flex gap-2">
+              <>
                 <Button size="sm" variant="subtle" onClick={() => setEdit(true)}>Edit profile</Button>
                 <Link href="/settings"><Button size="sm" variant="subtle"><Settings size={16} /></Button></Link>
-              </div>
+              </>
             ) : rel.isBlocked ? (
               <Button size="sm" variant="danger" onClick={() => setMenu(true)}>Blocked</Button>
             ) : (
-              <div className="flex items-center gap-2">
+              <>
                 <FollowButton
                   username={profile.username}
                   isPrivate={profile.isPrivate}
@@ -155,37 +161,52 @@ export function ProfileClient({ username }: { username: string }) {
                 />
                 <Button size="sm" variant="subtle" onClick={message}><MessageCircle size={16} /> Message</Button>
                 <Button size="sm" variant="subtle" onClick={() => setMenu(true)}><MoreHorizontal size={18} /></Button>
-              </div>
-            )}
-          </div>
-
-          <div className="mt-4 flex gap-8 text-sm">
-            <span><b className="font-semibold">{formatCount(profile.counts.posts)}</b> <span className="text-muted">posts</span></span>
-            <button onClick={() => setList("followers")} className="hover:opacity-70">
-              <b className="font-semibold">{formatCount(followerCount)}</b> <span className="text-muted">followers</span>
-            </button>
-            <button onClick={() => setList("following")} className="hover:opacity-70">
-              <b className="font-semibold">{formatCount(profile.counts.following)}</b> <span className="text-muted">following</span>
-            </button>
-          </div>
-
-          <div className="mt-3 space-y-0.5 text-sm">
-            <p className="font-semibold">{profile.displayName}</p>
-            {profile.bio && <p className="whitespace-pre-wrap text-text/90">{profile.bio}</p>}
-            {profile.location && (
-              <p className="flex items-center gap-1 text-muted"><MapPin size={13} /> {profile.location}</p>
-            )}
-            {profile.website && (
-              <a href={profile.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 font-medium text-accent hover:underline">
-                <LinkIcon size={13} /> {profile.website.replace(/^https?:\/\//, "")}
-              </a>
+              </>
             )}
           </div>
         </div>
-      </header>
+
+        {/* identity */}
+        <div className="mt-2">
+          <div className="flex flex-wrap items-center gap-1.5">
+            <h1 className="text-xl font-semibold leading-tight">{profile.displayName}</h1>
+            {profile.isVerified && <VerifiedBadge size={18} />}
+            {profile.isPrivate && (
+              <span className="flex items-center gap-1 text-xs text-muted"><Lock size={13} /> Private</span>
+            )}
+          </div>
+          <p className="text-sm text-muted">@{profile.username}</p>
+
+          {(profile.bio || profile.location || profile.website) && (
+            <div className="mt-3 space-y-1.5 text-sm">
+              {profile.bio && <p className="whitespace-pre-wrap text-text/90">{profile.bio}</p>}
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-muted">
+                {profile.location && (
+                  <span className="flex items-center gap-1"><MapPin size={13} /> {profile.location}</span>
+                )}
+                {profile.website && (
+                  <a href={profile.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 font-medium text-accent hover:underline">
+                    <LinkIcon size={13} /> {profile.website.replace(/^https?:\/\//, "")}
+                  </a>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* stats */}
+          <div className="mt-4 flex gap-6 text-sm">
+            <span><b className="font-semibold">{formatCount(profile.counts.posts)}</b> <span className="text-muted">posts</span></span>
+            <button onClick={() => setList("followers")} className="press hover:opacity-70">
+              <b className="font-semibold">{formatCount(followerCount)}</b> <span className="text-muted">followers</span>
+            </button>
+            <button onClick={() => setList("following")} className="press hover:opacity-70">
+              <b className="font-semibold">{formatCount(profile.counts.following)}</b> <span className="text-muted">following</span>
+            </button>
+          </div>
+        </div>
 
       {/* tabs */}
-      <div className="mt-8 flex border-t border-border">
+      <div className="mt-6 flex border-t border-border">
         {tabs.map((t) => (
           <button
             key={t.key}
@@ -212,11 +233,12 @@ export function ProfileClient({ username }: { username: string }) {
           <EmptyState
             icon={<Grid3x3 size={24} />}
             title={tab === "saved" ? "No saved posts" : tab === "tagged" ? "No tagged posts" : "No posts yet"}
-            hint={isSelf && tab === "posts" ? "Share your first moment on Echo." : undefined}
+            hint={isSelf && tab === "posts" ? "Share your first moment on Vortex." : undefined}
           />
         ) : (
           <PostGrid posts={posts} onOpen={setActive} />
         )}
+      </div>
       </div>
 
       {/* modals */}

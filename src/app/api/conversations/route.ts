@@ -1,8 +1,9 @@
 import { NextRequest } from "next/server";
-import { route, ok, bad } from "@/lib/api";
+import { route, ok, bad, forbidden } from "@/lib/api";
 import { requireUser } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { publicUser, serializeMessage } from "@/lib/serialize";
+import { isBlockedBetween } from "@/lib/social";
 
 export const dynamic = "force-dynamic";
 
@@ -64,6 +65,8 @@ export const POST = route(async (req: NextRequest) => {
   }
 
   if (!userId) return bad("Pick someone to message.");
+  // Can't start a 1:1 with someone you've blocked or who has blocked you.
+  if (await isBlockedBetween(me.id, userId)) return forbidden();
   // Find an existing 1:1 with exactly these two members.
   const existing = await prisma.conversation.findFirst({
     where: {

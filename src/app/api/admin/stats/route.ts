@@ -11,7 +11,7 @@ export const GET = route(async () => {
   const dayMs = 24 * 60 * 60 * 1000;
   const now = Date.now();
 
-  const [users, posts, comments, openReports, activeStories, suspended, banned] = await Promise.all([
+  const [users, posts, comments, openReports, activeStories, suspended, banned, verified] = await Promise.all([
     prisma.user.count(),
     prisma.post.count({ where: { status: "published" } }),
     prisma.comment.count(),
@@ -19,6 +19,7 @@ export const GET = route(async () => {
     prisma.story.count({ where: { expiresAt: { gt: new Date() } } }),
     prisma.user.count({ where: { status: "suspended" } }),
     prisma.user.count({ where: { status: "banned" } }),
+    prisma.user.count({ where: { isVerified: true } }),
   ]);
 
   // 7-day new-posts series for the activity chart.
@@ -38,7 +39,7 @@ export const GET = route(async () => {
   }
 
   return ok({
-    stats: { users, posts, comments, openReports, activeStories, suspended, banned },
+    stats: { users, posts, comments, openReports, activeStories, suspended, banned, verified },
     series,
   });
 });

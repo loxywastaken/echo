@@ -37,7 +37,7 @@ function LoginForm() {
   return (
     <div className="animate-fade-in-up">
       <h2 className="font-display text-2xl font-bold">Welcome back</h2>
-      <p className="mt-1 text-sm text-muted">Sign in to continue to Echo.</p>
+      <p className="mt-1 text-sm text-muted">Sign in to continue to Vortex.</p>
 
       <form onSubmit={submit} className="mt-7 space-y-4">
         <Input
@@ -72,7 +72,7 @@ function LoginForm() {
       </form>
 
       <p className="mt-6 text-center text-sm text-muted">
-        New to Echo?{" "}
+        New to Vortex?{" "}
         <Link href="/signup" className="font-semibold text-accent hover:underline">
           Create an account
         </Link>

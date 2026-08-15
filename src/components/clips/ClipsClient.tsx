@@ -45,7 +45,7 @@ export function ClipsClient() {
   if (clips.length === 0)
     return (
       <div className="grid h-[70vh] place-items-center">
-        <EmptyState icon={<Clapperboard size={26} />} title="No clips yet" hint="Share a video as an Echo Clip to get things started." />
+        <EmptyState icon={<Clapperboard size={26} />} title="No clips yet" hint="Share a video as a Vortex Clip to get things started." />
       </div>
     );
 
@@ -105,7 +105,14 @@ function ClipItem({ clip, muted, setMuted }: { clip: Post; muted: boolean; setMu
     setLiked(next);
     setLikeCount((c) => c + (next ? 1 : -1));
     const r = await api.post(`/api/posts/${clip.id}/like`).catch(() => null);
-    if (r) { setLiked(r.liked); setLikeCount(r.likeCount); }
+    if (r) {
+      setLiked(r.liked);
+      setLikeCount(r.likeCount);
+    } else {
+      // Request failed — roll the optimistic update back.
+      setLiked(!next);
+      setLikeCount((c) => c + (next ? -1 : 1));
+    }
   }
   async function save() {
     setSaved((s) => !s);

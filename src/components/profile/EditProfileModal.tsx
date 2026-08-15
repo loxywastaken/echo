@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { Camera } from "lucide-react";
+import { Camera, ImagePlus } from "lucide-react";
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
 import { Input, Textarea } from "@/components/ui/Input";
@@ -23,24 +23,31 @@ export function EditProfileModal({ open, onClose, onSaved }: { open: boolean; on
     isPrivate: user?.isPrivate || false,
   });
   const [avatar, setAvatar] = useState(user?.avatar || "");
+  const [cover, setCover] = useState(user?.cover || "");
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState<null | "avatar" | "cover">(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const coverRef = useRef<HTMLInputElement>(null);
 
   const set = (k: keyof typeof form) => (e: any) => setForm((f) => ({ ...f, [k]: e.target.value }));
 
-  async function pickAvatar(f: File) {
+  async function pick(f: File, which: "avatar" | "cover") {
+    setUploading(which);
     try {
       const { files } = await api.upload([f]);
-      setAvatar(files[0].url);
+      if (which === "avatar") setAvatar(files[0].url);
+      else setCover(files[0].url);
     } catch {
       toast("Upload failed", "error");
+    } finally {
+      setUploading(null);
     }
   }
 
   async function save() {
     setSaving(true);
     try {
-      await api.patch("/api/profile", { ...form, avatar });
+      await api.patch("/api/profile", { ...form, avatar, cover });
       await refresh();
       toast("Profile updated", "success");
       onSaved();
@@ -55,15 +62,42 @@ export function EditProfileModal({ open, onClose, onSaved }: { open: boolean; on
   return (
     <Modal open={open} onClose={onClose} title="Edit profile" className="sm:max-w-md">
       <div className="space-y-4 p-4">
-        <div className="flex flex-col items-center gap-2">
-          <button onClick={() => fileRef.current?.click()} className="press relative">
+        {/* Cover / banner */}
+        <div>
+          <button
+            onClick={() => coverRef.current?.click()}
+            className="press relative block h-28 w-full overflow-hidden rounded-xl bg-surface-2"
+          >
+            {cover ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={cover} alt="" className="h-full w-full object-cover" />
+            ) : (
+              <span className="block h-full w-full bg-gradient-to-br from-elevated via-surface-2 to-bg" />
+            )}
+            <span className="absolute inset-0 grid place-items-center bg-black/35 text-white opacity-0 transition hover:opacity-100">
+              {uploading === "cover" ? "Uploading…" : <span className="flex items-center gap-1.5 text-sm font-semibold"><ImagePlus size={18} /> Change cover</span>}
+            </span>
+          </button>
+          {cover && (
+            <div className="mt-1 text-right">
+              <button onClick={() => setCover("")} className="text-xs text-muted hover:text-danger">Remove cover</button>
+            </div>
+          )}
+          <input ref={coverRef} type="file" accept="image/*" hidden onChange={(e) => e.target.files?.[0] && pick(e.target.files[0], "cover")} />
+        </div>
+
+        {/* Avatar */}
+        <div className="-mt-8 flex flex-col items-center gap-2">
+          <button onClick={() => fileRef.current?.click()} className="press relative rounded-full bg-bg p-1">
             <Avatar src={avatar} name={form.displayName || "?"} size={84} />
-            <span className="absolute inset-0 grid place-items-center rounded-full bg-black/40 text-white opacity-0 transition hover:opacity-100">
+            <span className="absolute inset-1 grid place-items-center rounded-full bg-black/40 text-white opacity-0 transition hover:opacity-100">
               <Camera size={22} />
             </span>
           </button>
-          <button onClick={() => fileRef.current?.click()} className="text-sm font-semibold text-accent">Change photo</button>
-          <input ref={fileRef} type="file" accept="image/*" hidden onChange={(e) => e.target.files?.[0] && pickAvatar(e.target.files[0])} />
+          <button onClick={() => fileRef.current?.click()} className="text-sm font-semibold text-accent">
+            {uploading === "avatar" ? "Uploading…" : "Change photo"}
+          </button>
+          <input ref={fileRef} type="file" accept="image/*" hidden onChange={(e) => e.target.files?.[0] && pick(e.target.files[0], "avatar")} />
         </div>
 
         <Input label="Name" value={form.displayName} onChange={set("displayName")} />

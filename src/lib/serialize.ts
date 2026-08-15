@@ -90,7 +90,7 @@ export function serializeStory(s: any, viewerId?: string) {
   };
 }
 
-export function serializeNotification(n: any) {
+export function serializeNotification(n: any, opts?: { followsActor?: boolean }) {
   return {
     id: n.id,
     type: n.type,
@@ -102,6 +102,8 @@ export function serializeNotification(n: any) {
       ? { id: n.post.id, thumb: n.post.media?.[0]?.url ?? null }
       : null,
     commentId: n.commentId ?? null,
+    // Whether the viewer already follows the actor (drives the follow-back button).
+    followsActor: !!opts?.followsActor,
   };
 }
 

@@ -3,11 +3,11 @@ import { route, ok } from "@/lib/api";
 import { getSessionUser } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { postInclude, serializePost } from "@/lib/serialize";
-import { invisibleUserIds } from "@/lib/social";
+import { invisibleUserIds, visiblePostWhere } from "@/lib/social";
 
 export const dynamic = "force-dynamic";
 
-// Echo Clips — vertical short-form video feed.
+// Vortex Clips — vertical short-form video feed.
 export const GET = route(async (req: NextRequest) => {
   const viewer = await getSessionUser();
   const { searchParams } = new URL(req.url);
@@ -16,7 +16,7 @@ export const GET = route(async (req: NextRequest) => {
   const hidden = viewer ? await invisibleUserIds(viewer.id) : [];
 
   const clips = await prisma.post.findMany({
-    where: { isClip: true, status: "published", authorId: { notIn: hidden } },
+    where: { isClip: true, status: "published", authorId: { notIn: hidden }, ...(await visiblePostWhere(viewer?.id ?? null)) },
     include: postInclude(viewer?.id),
     orderBy: { createdAt: "desc" },
     take: limit + 1,

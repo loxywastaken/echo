@@ -34,7 +34,7 @@ function Verify() {
           <h2 className="mt-4 font-display text-2xl font-bold">Email verified</h2>
           <p className="mt-2 text-sm text-muted">Your account is all set.</p>
           <Link href="/" className="mt-6 inline-block text-sm font-semibold text-accent hover:underline">
-            Go to Echo
+            Go to Vortex
           </Link>
         </>
       )}
@@ -46,7 +46,7 @@ function Verify() {
           <h2 className="mt-4 font-display text-2xl font-bold">Link expired</h2>
           <p className="mt-2 text-sm text-muted">This verification link is invalid or has already been used.</p>
           <Link href="/" className="mt-6 inline-block text-sm font-semibold text-accent hover:underline">
-            Continue to Echo
+            Continue to Vortex
           </Link>
         </>
       )}

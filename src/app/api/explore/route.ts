@@ -3,7 +3,7 @@ import { route, ok } from "@/lib/api";
 import { getSessionUser } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { postInclude, serializePost, publicUser } from "@/lib/serialize";
-import { invisibleUserIds } from "@/lib/social";
+import { invisibleUserIds, visiblePostWhere } from "@/lib/social";
 
 export const dynamic = "force-dynamic";
 
@@ -19,6 +19,7 @@ export const GET = route(async (req: NextRequest) => {
   const where: any = {
     status: "published",
     authorId: { notIn: [...(viewer ? [viewer.id] : []), ...hidden] },
+    ...(await visiblePostWhere(viewer?.id ?? null)),
   };
 
   const posts = await prisma.post.findMany({

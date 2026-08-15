@@ -7,6 +7,7 @@ import { serializeComment } from "@/lib/serialize";
 import { extractMentions } from "@/lib/utils";
 import { notify, notifyUsernames } from "@/lib/notify";
 import { NOTIF } from "@/lib/constants";
+import { invisibleUserIds, canViewContent, isFollowing } from "@/lib/social";
 
 type Ctx = { params: { id: string } };
 
@@ -20,6 +21,19 @@ const commentInclude = (viewerId?: string) => ({
 
 export const GET = route(async (req: NextRequest, { params }: Ctx) => {
   const viewer = await getSessionUser();
+
+  // Only expose comments on posts the viewer is allowed to see.
+  const post = await prisma.post.findUnique({
+    where: { id: params.id },
+    select: { id: true, authorId: true, status: true, author: { select: { id: true, isPrivate: true } } },
+  });
+  if (!post || post.status !== "published") return notFound("Post not found");
+  if (viewer) {
+    const hidden = await invisibleUserIds(viewer.id);
+    if (hidden.includes(post.authorId)) return notFound("Post not found");
+  }
+  if (!(await canViewContent(viewer?.id ?? null, post.author))) return forbidden();
+
   const comments = await prisma.comment.findMany({
     where: { postId: params.id, parentId: null },
     include: {
@@ -40,10 +54,28 @@ export const POST = route(async (req: NextRequest, { params }: Ctx) => {
   const user = await requireUser();
   const post = await prisma.post.findUnique({
     where: { id: params.id },
-    select: { id: true, authorId: true, commentsDisabled: true },
+    select: {
+      id: true,
+      authorId: true,
+      status: true,
+      commentsDisabled: true,
+      author: { select: { id: true, isPrivate: true, allowComments: true } },
+    },
   });
-  if (!post) return notFound("Post not found");
+  if (!post || post.status !== "published") return notFound("Post not found");
   if (post.commentsDisabled) return forbidden();
+
+  // Block + privacy enforcement.
+  const hidden = await invisibleUserIds(user.id);
+  if (hidden.includes(post.authorId)) return notFound("Post not found");
+  if (!(await canViewContent(user.id, post.author))) return forbidden();
+
+  // Honour the author's "who can comment" preference (everyone | followers | none).
+  if (post.authorId !== user.id) {
+    const pref = post.author.allowComments;
+    if (pref === "none") return forbidden();
+    if (pref === "followers" && !(await isFollowing(user.id, post.authorId))) return forbidden();
+  }
 
   const parsed = commentSchema.safeParse(await req.json());
   if (!parsed.success) return bad(firstError(parsed.error));
@@ -61,7 +93,11 @@ export const POST = route(async (req: NextRequest, { params }: Ctx) => {
   } else {
     await notify({ recipientId: post.authorId, actorId: user.id, type: NOTIF.COMMENT, postId: post.id, commentId: comment.id });
   }
-  await notifyUsernames(extractMentions(body), { actorId: user.id, type: NOTIF.MENTION, postId: post.id, commentId: comment.id });
+  await notifyUsernames(
+    extractMentions(body),
+    { actorId: user.id, type: NOTIF.MENTION, postId: post.id, commentId: comment.id },
+    { prefField: "allowMentions" }
+  );
 
   return ok({ comment: serializeComment(comment, user.id) });
 });

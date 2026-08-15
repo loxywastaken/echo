@@ -3,6 +3,7 @@ import { route, ok, bad } from "@/lib/api";
 import { requireUser } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { editProfileSchema, firstError } from "@/lib/validators";
+import { acceptAllPendingRequests } from "@/lib/social";
 
 export const PATCH = route(async (req: NextRequest) => {
   const me = await requireUser();
@@ -31,21 +32,7 @@ export const PATCH = route(async (req: NextRequest) => {
   });
 
   // If switching to public, auto-accept any pending follow requests.
-  if (d.isPrivate === false) {
-    const pending = await prisma.followRequest.findMany({ where: { toId: me.id } });
-    if (pending.length) {
-      await prisma.$transaction([
-        ...pending.map((r) =>
-          prisma.follow.upsert({
-            where: { followerId_followingId: { followerId: r.fromId, followingId: me.id } },
-            create: { followerId: r.fromId, followingId: me.id },
-            update: {},
-          })
-        ),
-        prisma.followRequest.deleteMany({ where: { toId: me.id } }),
-      ]);
-    }
-  }
+  if (d.isPrivate === false) await acceptAllPendingRequests(me.id);
 
   return ok({
     user: {

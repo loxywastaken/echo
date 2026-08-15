@@ -20,6 +20,7 @@ export function ExploreClient() {
   const tag = params.get("tag");
 
   const [posts, setPosts] = useState<Post[]>([]);
+  const [tagCount, setTagCount] = useState(0);
   const [trending, setTrending] = useState<{ tag: string; count: number }[]>([]);
   const [creators, setCreators] = useState<any[]>([]);
   const [cursor, setCursor] = useState<string | null>(null);
@@ -34,6 +35,7 @@ export function ExploreClient() {
     setLoading(true);
     api.get(`/api/hashtags/${encodeURIComponent(tag)}`).then((r) => {
       setPosts(r.posts);
+      setTagCount(r.count ?? r.posts.length);
       setDone(true);
       setLoading(false);
     });
@@ -77,7 +79,7 @@ export function ExploreClient() {
           </span>
           <div>
             <h1 className="font-display text-2xl font-bold">#{tag}</h1>
-            <p className="text-sm text-muted">{formatCount(posts.length)} posts</p>
+            <p className="text-sm text-muted">{formatCount(tagCount)} posts</p>
           </div>
         </div>
         {loading ? (

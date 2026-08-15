@@ -79,6 +79,7 @@ export type NotificationItem = {
   actor: PublicUser | null;
   post: { id: string; thumb: string | null } | null;
   commentId: string | null;
+  followsActor: boolean;
 };
 
 export type Message = {

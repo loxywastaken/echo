@@ -19,6 +19,55 @@ export async function isFollowing(followerId: string, followingId: string) {
   return !!row;
 }
 
+/** True if either user has blocked the other. */
+export async function isBlockedBetween(a: string, b: string) {
+  const row = await prisma.block.findFirst({
+    where: {
+      OR: [
+        { blockerId: a, blockedId: b },
+        { blockerId: b, blockedId: a },
+      ],
+    },
+  });
+  return !!row;
+}
+
+/**
+ * Prisma `Post` where-fragment limiting results to posts the viewer may see:
+ * posts by public authors, the viewer's own posts, or posts by accounts the
+ * viewer follows. AND it with other conditions (spread it into the `where`).
+ */
+export async function visiblePostWhere(viewerId: string | null): Promise<any> {
+  if (!viewerId) return { author: { isPrivate: false } };
+  const following = await prisma.follow.findMany({
+    where: { followerId: viewerId },
+    select: { followingId: true },
+  });
+  return {
+    OR: [
+      { author: { isPrivate: false } },
+      { authorId: viewerId },
+      { authorId: { in: following.map((f) => f.followingId) } },
+    ],
+  };
+}
+
+/** Convert all of a user's pending follow requests into follows (used when going public). */
+export async function acceptAllPendingRequests(userId: string) {
+  const pending = await prisma.followRequest.findMany({ where: { toId: userId } });
+  if (!pending.length) return;
+  await prisma.$transaction([
+    ...pending.map((r) =>
+      prisma.follow.upsert({
+        where: { followerId_followingId: { followerId: r.fromId, followingId: userId } },
+        create: { followerId: r.fromId, followingId: userId },
+        update: {},
+      })
+    ),
+    prisma.followRequest.deleteMany({ where: { toId: userId } }),
+  ]);
+}
+
 export type Relationship = {
   isSelf: boolean;
   isFollowing: boolean;
