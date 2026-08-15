@@ -46,9 +46,46 @@ export function CallProvider({ children }: { children: React.ReactNode }) {
   const pendingCandRef = useRef<any[]>([]);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const incomingOfferRef = useRef<any>(null);
+  const ringCtxRef = useRef<AudioContext | null>(null);
+  const ringTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Synthesized ringtone (WebAudio) — no audio asset needed.
+  function stopRing() {
+    if (ringTimerRef.current) { clearInterval(ringTimerRef.current); ringTimerRef.current = null; }
+  }
+  function startRing(mode: "incoming" | "outgoing") {
+    stopRing();
+    try {
+      const Ctor = (window.AudioContext || (window as any).webkitAudioContext) as typeof AudioContext | undefined;
+      if (!Ctor) return;
+      const ctx = ringCtxRef.current ?? new Ctor();
+      ringCtxRef.current = ctx;
+      if (ctx.state === "suspended") ctx.resume().catch(() => {});
+      const beep = (freq: number, dur: number, delay = 0) => {
+        const t0 = ctx.currentTime + delay;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = "sine";
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.0001, t0);
+        gain.gain.exponentialRampToValueAtTime(mode === "incoming" ? 0.2 : 0.12, t0 + 0.04);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+        osc.connect(gain).connect(ctx.destination);
+        osc.start(t0);
+        osc.stop(t0 + dur + 0.05);
+      };
+      const ring = () => {
+        if (mode === "incoming") { beep(660, 0.4); beep(540, 0.4, 0.5); }
+        else beep(440, 0.3);
+      };
+      ring();
+      ringTimerRef.current = setInterval(ring, mode === "incoming" ? 2200 : 3400);
+    } catch {}
+  }
 
   const cleanup = useCallback(() => {
     if (pollRef.current) { clearInterval(pollRef.current); pollRef.current = null; }
+    if (ringTimerRef.current) { clearInterval(ringTimerRef.current); ringTimerRef.current = null; }
     try { pcRef.current?.close(); } catch {}
     pcRef.current = null;
     localRef.current?.getTracks().forEach((t) => t.stop());
@@ -239,7 +276,16 @@ export function CallProvider({ children }: { children: React.ReactNode }) {
     s.getVideoTracks().forEach((t) => (t.enabled = !next));
   }
 
+  // Ring while a call is pending; stop once connected or idle.
+  useEffect(() => {
+    if (phase === "incoming") startRing("incoming");
+    else if (phase === "outgoing") startRing("outgoing");
+    else stopRing();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase]);
+
   useEffect(() => () => cleanup(), [cleanup]);
+  useEffect(() => () => { try { ringCtxRef.current?.close(); } catch {} }, []);
 
   return (
     <Ctx.Provider value={{ startCall, busy: phase !== "idle" }}>

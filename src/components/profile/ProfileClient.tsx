@@ -13,6 +13,8 @@ import {
   Link as LinkIcon,
   MapPin,
   MessageCircle,
+  Phone,
+  Video,
 } from "lucide-react";
 import { Avatar } from "@/components/ui/Avatar";
 import { VerifiedBadge, Spinner, EmptyState } from "@/components/ui/misc";
@@ -26,6 +28,7 @@ import { ProfileMenu } from "./ProfileMenu";
 import { ReportModal } from "@/components/ReportModal";
 import { api } from "@/lib/client";
 import { useAuth } from "@/context/AuthContext";
+import { useCall } from "@/context/CallContext";
 import type { Post } from "@/lib/types";
 import type { Relationship } from "@/lib/social-types";
 import { formatCount } from "@/lib/utils";
@@ -56,6 +59,7 @@ const TABS = [
 export function ProfileClient({ username }: { username: string }) {
   const router = useRouter();
   const { user } = useAuth();
+  const { startCall, busy: callBusy } = useCall();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [rel, setRel] = useState<Relationship | null>(null);
   const [canView, setCanView] = useState(true);
@@ -121,6 +125,14 @@ export function ProfileClient({ username }: { username: string }) {
 
   const tabs = isSelf ? TABS : TABS.filter((t) => t.key !== "saved");
   const locked = profile.isPrivate && !canView && !isSelf;
+  const peer = {
+    id: profile.id,
+    username: profile.username,
+    displayName: profile.displayName,
+    avatar: profile.avatar,
+    isVerified: profile.isVerified,
+    isPrivate: profile.isPrivate,
+  };
 
   return (
     <div className="mx-auto max-w-4xl pb-10">
@@ -160,6 +172,8 @@ export function ProfileClient({ username }: { username: string }) {
                   onChange={(f, d) => setFollowerCount((c) => c + d)}
                 />
                 <Button size="sm" variant="subtle" onClick={message}><MessageCircle size={16} /> Message</Button>
+                <Button size="sm" variant="subtle" disabled={callBusy} onClick={() => startCall(peer, "audio")} aria-label="Voice call"><Phone size={16} /></Button>
+                <Button size="sm" variant="subtle" disabled={callBusy} onClick={() => startCall(peer, "video")} aria-label="Video call"><Video size={16} /></Button>
                 <Button size="sm" variant="subtle" onClick={() => setMenu(true)}><MoreHorizontal size={18} /></Button>
               </>
             )}
