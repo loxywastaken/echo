@@ -77,12 +77,6 @@ function LoginForm() {
           Create an account
         </Link>
       </p>
-
-      <div className="mt-8 rounded-xl border border-border bg-surface/60 p-3 text-center text-xs text-faint">
-        Demo login — <span className="text-muted">maya</span> / <span className="text-muted">password123</span>
-        <br />
-        Admin — <span className="text-muted">admin</span> / <span className="text-muted">password123</span>
-      </div>
     </div>
   );
 }
