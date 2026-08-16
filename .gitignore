@@ -36,3 +36,10 @@ yarn-error.log*
 .env*.local
 !.env.example
 tsconfig.tsbuildinfo
+
+# Android
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/.idea/
