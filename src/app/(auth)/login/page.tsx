@@ -3,6 +3,7 @@
 import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 import { api, ApiError } from "@/lib/client";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/context/ToastContext";
@@ -20,6 +21,8 @@ function LoginForm() {
   const [remember, setRemember] = useState(true);
   const [loading, setLoading] = useState(false);
 
+  const isAddAccount = params.get("add") === "1";
+
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
@@ -27,6 +30,9 @@ function LoginForm() {
       const res = await api.post("/api/auth/login", { identifier, password, rememberMe: remember });
       await refresh();
       if (res.suspended) toast("Your account is suspended — some actions are limited.", "info");
+      if (isAddAccount) {
+        toast("Account added! You can now switch between accounts.", "success");
+      }
       router.push(params.get("next") || "/");
     } catch (err) {
       toast(err instanceof ApiError ? err.message : "Could not sign in", "error");
@@ -36,8 +42,24 @@ function LoginForm() {
 
   return (
     <div className="animate-fade-in-up">
-      <h2 className="font-display text-2xl font-bold">Welcome back</h2>
-      <p className="mt-1 text-sm text-muted">Sign in to continue to Vortex.</p>
+      {isAddAccount && (
+        <button
+          onClick={() => router.back()}
+          className="mb-4 flex items-center gap-1.5 text-sm text-muted hover:text-text transition"
+        >
+          <ArrowLeft size={16} />
+          Back to your account
+        </button>
+      )}
+
+      <h2 className="font-display text-2xl font-bold">
+        {isAddAccount ? "Add another account" : "Welcome back"}
+      </h2>
+      <p className="mt-1 text-sm text-muted">
+        {isAddAccount
+          ? "Sign in with another account to switch between them."
+          : "Sign in to continue to Echo."}
+      </p>
 
       <form onSubmit={submit} className="mt-7 space-y-4">
         <Input
@@ -67,16 +89,26 @@ function LoginForm() {
           </Link>
         </div>
         <Button type="submit" variant="primary" size="lg" loading={loading} className="w-full">
-          Log in
+          {isAddAccount ? "Add & switch" : "Log in"}
         </Button>
       </form>
 
-      <p className="mt-6 text-center text-sm text-muted">
-        New to Vortex?{" "}
-        <Link href="/signup" className="font-semibold text-accent hover:underline">
-          Create an account
-        </Link>
-      </p>
+      {!isAddAccount && (
+        <>
+          <p className="mt-6 text-center text-sm text-muted">
+            New to Echo?{" "}
+            <Link href="/signup" className="font-semibold text-accent hover:underline">
+              Create an account
+            </Link>
+          </p>
+
+          <div className="mt-8 rounded-xl border border-border bg-surface/60 p-3 text-center text-xs text-faint">
+            Demo login — <span className="text-muted">maya</span> / <span className="text-muted">password123</span>
+            <br />
+            Admin — <span className="text-muted">admin</span> / <span className="text-muted">password123</span>
+          </div>
+        </>
+      )}
     </div>
   );
 }
