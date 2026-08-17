@@ -14,7 +14,7 @@ import {
   Shield,
 } from "lucide-react";
 import { Logo, LogoMark } from "@/components/Logo";
-import { Avatar } from "@/components/ui/Avatar";
+import { AccountSwitcher } from "@/components/AccountSwitcher";
 import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
 
@@ -102,15 +102,7 @@ export function Sidebar({ onCreate, onSearch }: { onCreate: () => void; onSearch
           <Settings size={24} className="text-muted group-hover:text-text" />
           <span className="hidden font-medium text-muted group-hover:text-text xl:block">Settings</span>
         </Link>
-        {user && (
-          <Link href={`/${user.username}`} className="press flex items-center gap-3 rounded-xl px-2 py-2 hover:bg-surface-2">
-            <Avatar src={user.avatar} name={user.displayName} size={30} />
-            <span className="hidden min-w-0 xl:block">
-              <span className="block truncate text-sm font-semibold text-text">{user.displayName}</span>
-              <span className="block truncate text-xs text-faint">@{user.username}</span>
-            </span>
-          </Link>
-        )}
+        {user && <AccountSwitcher />}
       </div>
     </aside>
   );
