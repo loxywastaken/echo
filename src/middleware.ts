@@ -23,10 +23,14 @@ export function middleware(req: NextRequest) {
     return NextResponse.redirect(url);
   }
   if (hasSession && isAuthPage) {
-    const url = req.nextUrl.clone();
-    url.pathname = "/";
-    url.search = "";
-    return NextResponse.redirect(url);
+    // Allow accessing /login?add=1 while logged in (adding another account)
+    const isAddAccount = pathname === "/login" && req.nextUrl.searchParams.get("add") === "1";
+    if (!isAddAccount) {
+      const url = req.nextUrl.clone();
+      url.pathname = "/";
+      url.search = "";
+      return NextResponse.redirect(url);
+    }
   }
   return NextResponse.next();
 }
