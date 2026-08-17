@@ -5,6 +5,7 @@ export const BRAND = {
   name: "Echo",
   tagline: "Share what echoes.",
   description: "A place for the moments worth repeating.",
+    wordmark: "Echo",
 };
 
 export const SESSION_COOKIE = "echo_session";
