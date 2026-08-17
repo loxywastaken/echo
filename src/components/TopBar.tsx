@@ -3,15 +3,19 @@
 import Link from "next/link";
 import { Heart, MessageCircle, Search } from "lucide-react";
 import { Logo } from "@/components/Logo";
+import { AccountSwitcher } from "@/components/AccountSwitcher";
 import { useAuth } from "@/context/AuthContext";
 
 export function TopBar({ onSearch }: { onSearch: () => void }) {
   const { user } = useAuth();
   return (
     <header className="sticky top-0 z-40 flex items-center justify-between border-b border-border glass px-4 py-3 md:hidden">
-      <Link href="/">
-        <Logo size={26} />
-      </Link>
+      <div className="flex items-center gap-2">
+        {user && <AccountSwitcher compact />}
+        <Link href="/">
+          <Logo size={26} />
+        </Link>
+      </div>
       <div className="flex items-center gap-1.5">
         <button onClick={onSearch} className="press grid h-9 w-9 place-items-center rounded-full text-text" aria-label="Search">
           <Search size={22} />
