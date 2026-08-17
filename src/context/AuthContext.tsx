@@ -63,6 +63,16 @@ export function AuthProvider({
 
   const logout = useCallback(async () => {
     await api.post("/api/auth/logout").catch(() => {});
+    // Check if we were switched to another account (server sets the next session)
+    try {
+      const { user: nextUser } = await api.get<{ user: Me | null }>("/api/auth/me");
+      if (nextUser) {
+        // Switched to another stored account
+        setUser(nextUser);
+        window.location.href = "/";
+        return;
+      }
+    } catch { /* no remaining accounts */ }
     setUser(null);
     window.location.href = "/login";
   }, []);
