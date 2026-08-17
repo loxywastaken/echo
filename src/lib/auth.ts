@@ -5,12 +5,13 @@ import bcrypt from "bcryptjs";
 import { prisma } from "./db";
 import {
   SESSION_COOKIE,
+  ACCOUNTS_COOKIE,
   SESSION_TTL_DAYS,
   SESSION_TTL_DAYS_REMEMBER,
   USER_STATUS,
 } from "./constants";
 
-// ── Passwords ────────────────────────────────────────────────────────────────
+// ── Passwords ────────────────────────────────────────────────────────────────────────────────
 export async function hashPassword(pw: string) {
   return bcrypt.hash(pw, 10);
 }
@@ -18,7 +19,7 @@ export async function verifyPassword(pw: string, hash: string) {
   return bcrypt.compare(pw, hash);
 }
 
-// ── Tokens ───────────────────────────────────────────────────────────────────
+// ── Tokens ─────────────────────────────────────────────────────────────────────────────────
 export function randomToken(bytes = 32) {
   return crypto.randomBytes(bytes).toString("hex");
 }
@@ -26,7 +27,30 @@ export function sha256(input: string) {
   return crypto.createHash("sha256").update(input).digest("hex");
 }
 
-// ── Sessions (opaque token stored hashed server-side) ─────────────────────────
+// ── Multi-account cookie helpers ─────────────────────────────────────────────────────────
+type StoredAccount = { userId: string; token: string };
+
+function getAccountsCookie(): StoredAccount[] {
+  try {
+    const raw = cookies().get(ACCOUNTS_COOKIE)?.value;
+    if (!raw) return [];
+    return JSON.parse(raw) as StoredAccount[];
+  } catch {
+    return [];
+  }
+}
+
+function setAccountsCookie(accounts: StoredAccount[], expires: Date) {
+  cookies().set(ACCOUNTS_COOKIE, JSON.stringify(accounts), {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    expires,
+  });
+}
+
+// ── Sessions (opaque token stored hashed server-side) ───────────────────────────────────
 export type DeviceInfo = { userAgent?: string; ip?: string };
 
 function labelDevice(ua?: string): string {
@@ -69,6 +93,8 @@ export async function createSession(userId: string, rememberMe: boolean, device:
       expiresAt,
     },
   });
+
+  // Set the active session cookie
   cookies().set(SESSION_COOKIE, token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
@@ -76,6 +102,12 @@ export async function createSession(userId: string, rememberMe: boolean, device:
     path: "/",
     expires: expiresAt,
   });
+
+  // Add to multi-account cookie (replace if same user already stored)
+  const accounts = getAccountsCookie().filter((a) => a.userId !== userId);
+  accounts.push({ userId, token });
+  setAccountsCookie(accounts, expiresAt);
+
   return token;
 }
 
@@ -84,7 +116,27 @@ export async function destroySession() {
   if (token) {
     await prisma.session.deleteMany({ where: { tokenHash: sha256(token) } });
   }
-  cookies().delete(SESSION_COOKIE);
+
+  // Remove only this account from the stored list
+  const accounts = getAccountsCookie();
+  const remaining = accounts.filter((a) => a.token !== token);
+
+  if (remaining.length > 0) {
+    // Switch to the first remaining account
+    const next = remaining[0];
+    const futureExpiry = new Date(Date.now() + SESSION_TTL_DAYS_REMEMBER * 24 * 60 * 60 * 1000);
+    cookies().set(SESSION_COOKIE, next.token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      expires: futureExpiry,
+    });
+    setAccountsCookie(remaining, futureExpiry);
+  } else {
+    cookies().delete(SESSION_COOKIE);
+    cookies().delete(ACCOUNTS_COOKIE);
+  }
 }
 
 /** Resolve the currently authenticated user, or null. Also refreshes lastActive. */
@@ -101,17 +153,6 @@ export async function getSessionUser() {
   prisma.session
     .update({ where: { id: session.id }, data: { lastActive: new Date() } })
     .catch(() => {});
-  // Owner accounts always have admin, plus any usernames in ADMIN_USERNAMES.
-  // This grants admin without a DB write, so it works even where we can't run
-  // the make-admin script.
-  const admins = new Set(
-    ["zxme", "vortex", ...(process.env.ADMIN_USERNAMES || "").split(",")]
-      .map((s) => s.trim().toLowerCase())
-      .filter(Boolean)
-  );
-  if (admins.has(session.user.username.toLowerCase())) {
-    (session.user as any).role = "admin";
-  }
   return session.user;
 }
 
@@ -128,6 +169,69 @@ export class AuthError extends Error {
     super("Not authenticated");
     this.name = "AuthError";
   }
+}
+
+// ── Multi-account: get linked accounts ───────────────────────────────────────────────────
+
+/** Returns minimal info for all stored accounts (for the switcher dropdown). */
+export async function getLinkedAccounts() {
+  const accounts = getAccountsCookie();
+  if (accounts.length <= 1) return [];
+
+  const activeToken = cookies().get(SESSION_COOKIE)?.value;
+
+  // Validate each stored session and fetch user info
+  const results = await Promise.all(
+    accounts.map(async (acct) => {
+      const session = await prisma.session.findUnique({
+        where: { tokenHash: sha256(acct.token) },
+        include: { user: { select: { id: true, username: true, displayName: true, avatar: true, isVerified: true } } },
+      });
+      if (!session || session.expiresAt < new Date()) return null;
+      if (session.user) {
+        return {
+          userId: session.user.id,
+          username: session.user.username,
+          displayName: session.user.displayName,
+          avatar: session.user.avatar,
+          isVerified: session.user.isVerified,
+          isActive: acct.token === activeToken,
+        };
+      }
+      return null;
+    })
+  );
+  return results.filter(Boolean);
+}
+
+/** Switch to a different stored account by userId. Returns true on success. */
+export async function switchAccount(targetUserId: string) {
+  const accounts = getAccountsCookie();
+  const target = accounts.find((a) => a.userId === targetUserId);
+  if (!target) return false;
+
+  // Verify the session is still valid
+  const session = await prisma.session.findUnique({
+    where: { tokenHash: sha256(target.token) },
+  });
+  if (!session || session.expiresAt < new Date()) {
+    // Remove invalid account from the list
+    const cleaned = accounts.filter((a) => a.userId !== targetUserId);
+    const futureExpiry = new Date(Date.now() + SESSION_TTL_DAYS_REMEMBER * 24 * 60 * 60 * 1000);
+    setAccountsCookie(cleaned, futureExpiry);
+    return false;
+  }
+
+  // Set the active session cookie to the target account's token
+  cookies().set(SESSION_COOKIE, target.token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    expires: session.expiresAt,
+  });
+
+  return true;
 }
 
 /** Full "me" DTO (profile + counts) used to hydrate the client on first paint. */
