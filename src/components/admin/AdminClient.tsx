@@ -3,36 +3,33 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
-  Users2, ImageIcon, MessageSquare, Flag, Clapperboard, Ban, PauseCircle, Search, Trash2,
-  Check, X, BadgeCheck, Shield, ShieldOff, Heart,
+  Users2, ImageIcon, MessageSquare, Flag, Clapperboard, Ban, PauseCircle, Search, Trash2, Check, X,
 } from "lucide-react";
 import { Avatar } from "@/components/ui/Avatar";
 import { Button } from "@/components/ui/Button";
-import { Spinner, EmptyState, Toggle } from "@/components/ui/misc";
-import { Textarea } from "@/components/ui/Input";
+import { Spinner, EmptyState, VerifiedBadge } from "@/components/ui/misc";
 import { api } from "@/lib/client";
-import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/context/ToastContext";
 import { cn, formatCount, timeAgo } from "@/lib/utils";
 
-const TABS = ["Overview", "Reports", "Users", "Content", "System"] as const;
+const TABS = ["Overview", "Reports", "Users"] as const;
 
 export function AdminClient() {
   const [tab, setTab] = useState<(typeof TABS)[number]>("Overview");
   return (
     <div className="mx-auto max-w-5xl px-4 py-6">
-      <div className="no-scrollbar mb-6 flex gap-1 overflow-x-auto rounded-xl bg-surface-2 p-1">
+      <div className="mb-6 flex gap-1 rounded-xl bg-surface-2 p-1">
         {TABS.map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
-            className={cn("press shrink-0 whitespace-nowrap rounded-lg px-4 py-2 text-sm font-semibold sm:flex-1", tab === t ? "bg-accent-gradient text-white" : "text-muted hover:text-text")}
+            className={cn("press flex-1 rounded-lg py-2 text-sm font-semibold", tab === t ? "bg-accent-gradient text-white" : "text-muted hover:text-text")}
           >
             {t}
           </button>
         ))}
       </div>
-      {tab === "Overview" ? <Overview /> : tab === "Reports" ? <Reports /> : tab === "Users" ? <UsersTab /> : tab === "Content" ? <ContentTab /> : <SystemTab />}
+      {tab === "Overview" ? <Overview /> : tab === "Reports" ? <Reports /> : <UsersTab />}
     </div>
   );
 }
@@ -47,14 +44,13 @@ function Overview() {
   if (!data) return <div className="grid place-items-center py-20"><Spinner /></div>;
 
   const cards = [
-    { label: "Users", value: data.stats.users, icon: Users2 },
-    { label: "Posts", value: data.stats.posts, icon: ImageIcon },
-    { label: "Comments", value: data.stats.comments, icon: MessageSquare },
-    { label: "Verified", value: data.stats.verified, icon: BadgeCheck },
-    { label: "Open reports", value: data.stats.openReports, icon: Flag },
-    { label: "Active stories", value: data.stats.activeStories, icon: Clapperboard },
-    { label: "Suspended", value: data.stats.suspended, icon: PauseCircle },
-    { label: "Banned", value: data.stats.banned, icon: Ban },
+    { label: "Users", value: data.stats.users, icon: Users2, color: "text-accent" },
+    { label: "Posts", value: data.stats.posts, icon: ImageIcon, color: "text-accent-2" },
+    { label: "Comments", value: data.stats.comments, icon: MessageSquare, color: "text-success" },
+    { label: "Open reports", value: data.stats.openReports, icon: Flag, color: "text-danger" },
+    { label: "Active stories", value: data.stats.activeStories, icon: Clapperboard, color: "text-warn" },
+    { label: "Suspended", value: data.stats.suspended, icon: PauseCircle, color: "text-warn" },
+    { label: "Banned", value: data.stats.banned, icon: Ban, color: "text-danger" },
   ];
   const max = Math.max(1, ...data.series.map((s: any) => Math.max(s.posts, s.users)));
 
@@ -63,7 +59,7 @@ function Overview() {
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         {cards.map((c) => (
           <div key={c.label} className="card p-4">
-            <c.icon size={20} className="text-muted" />
+            <c.icon size={20} className={c.color} />
             <p className="mt-2 font-display text-2xl font-bold">{formatCount(c.value)}</p>
             <p className="text-xs text-muted">{c.label}</p>
           </div>
@@ -72,7 +68,7 @@ function Overview() {
 
       {/* activity chart */}
       <div className="card p-5">
-        <p className="mb-4 text-sm font-semibold text-muted">Activity — last 7 days</p>
+        <p className="mb-4 text-sm font-semibold text-muted">Activity â last 7 days</p>
         <div className="flex items-end justify-between gap-2" style={{ height: 140 }}>
           {data.series.map((s: any, i: number) => (
             <div key={i} className="flex flex-1 flex-col items-center gap-1">
@@ -102,7 +98,7 @@ function Overview() {
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm">{p.caption || "(no caption)"}</p>
-                    <p className="text-xs text-faint">@{p.author?.username} · {timeAgo(p.createdAt)} {p.status === "removed" && <span className="text-danger">· removed</span>}</p>
+                    <p className="text-xs text-faint">@{p.author?.username} Â· {timeAgo(p.createdAt)} {p.status === "removed" && <span className="text-danger">Â· removed</span>}</p>
                   </div>
                 </Link>
               ))}
@@ -157,7 +153,7 @@ function Reports() {
           <div className="mb-3 flex items-center gap-2 text-xs">
             <span className="rounded-full bg-danger/15 px-2 py-0.5 font-semibold text-danger">{r.targetType}</span>
             <span className="text-muted">{r.reason}</span>
-            <span className="ml-auto text-faint">reported by @{r.reporter?.username} · {timeAgo(r.createdAt)}</span>
+            <span className="ml-auto text-faint">reported by @{r.reporter?.username} Â· {timeAgo(r.createdAt)}</span>
           </div>
 
           <div className="mb-3 flex items-center gap-3 rounded-xl bg-surface-2 p-3">
@@ -174,7 +170,7 @@ function Reports() {
             )}
             {r.targetType === "comment" && r.comment && (
               <div className="min-w-0 flex-1">
-                <p className="text-sm">“{r.comment.body}”</p>
+                <p className="text-sm">â{r.comment.body}â</p>
                 <p className="text-xs text-faint">by @{r.comment.author?.username}</p>
               </div>
             )}
@@ -215,17 +211,11 @@ function Reports() {
   );
 }
 
-const USER_FILTERS = ["all", "verified", "admins", "suspended", "banned"] as const;
-type UserFilter = (typeof USER_FILTERS)[number];
-
 function UsersTab() {
   const { toast } = useToast();
-  const { user: me } = useAuth();
   const [q, setQ] = useState("");
-  const [filter, setFilter] = useState<UserFilter>("all");
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [busy, setBusy] = useState<string | null>(null);
 
   async function load() {
     setLoading(true);
@@ -240,123 +230,12 @@ function UsersTab() {
   }, [q]);
 
   async function act(id: string, action: string) {
-    setBusy(id + action);
     try {
       await api.patch("/api/admin/users", { id, action });
       toast("Done", "success");
-      await load();
+      load();
     } catch (e: any) {
       toast(e?.message || "Failed", "error");
-    } finally {
-      setBusy(null);
-    }
-  }
-
-  const shown = users.filter((u) =>
-    filter === "all" ? true :
-    filter === "verified" ? u.isVerified :
-    filter === "admins" ? u.role === "admin" :
-    u.status === filter
-  );
-
-  return (
-    <div>
-      <div className="mb-3 flex items-center gap-2 rounded-xl bg-surface-2 px-3">
-        <Search size={16} className="text-faint" />
-        <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search users by name, @username or email" className="flex-1 bg-transparent py-2.5 text-sm outline-none" />
-      </div>
-      <div className="mb-4 flex flex-wrap gap-1.5">
-        {USER_FILTERS.map((f) => (
-          <button
-            key={f}
-            onClick={() => setFilter(f)}
-            className={cn(
-              "press rounded-full px-3 py-1 text-xs font-semibold capitalize",
-              filter === f ? "bg-accent-gradient text-white" : "bg-surface-2 text-muted hover:text-text"
-            )}
-          >
-            {f}
-          </button>
-        ))}
-      </div>
-      {loading ? (
-        <div className="grid place-items-center py-16"><Spinner /></div>
-      ) : (
-        <div className="space-y-2">
-          {shown.map((u) => {
-            const isSelf = me?.id === u.id;
-            const isAdmin = u.role === "admin";
-            return (
-              <div key={u.id} className="card flex flex-wrap items-center gap-3 p-3">
-                <Link href={`/${u.username}`}><Avatar src={u.avatar} name={u.displayName} size={44} /></Link>
-                <div className="min-w-0 flex-1">
-                  <p className="flex flex-wrap items-center gap-1 text-sm font-semibold">
-                    {u.username}
-                    {u.isVerified && <BadgeCheck size={14} className="text-accent" />}
-                    {isAdmin && <span className="rounded bg-accent/15 px-1.5 text-xs text-accent">admin</span>}
-                    {isSelf && <span className="rounded bg-surface-2 px-1.5 text-xs text-muted">you</span>}
-                    <span className={cn("rounded px-1.5 text-xs", u.status === "active" ? "bg-success/15 text-success" : u.status === "suspended" ? "bg-warn/15 text-warn" : "bg-danger/15 text-danger")}>{u.status}</span>
-                  </p>
-                  <p className="truncate text-xs text-faint">{u.email} · {formatCount(u.followers)} followers · {u.posts} posts</p>
-                </div>
-                <div className="flex flex-wrap gap-1.5">
-                  <Button size="sm" variant="ghost" loading={busy === u.id + (u.isVerified ? "unverify" : "verify")} onClick={() => act(u.id, u.isVerified ? "unverify" : "verify")}>
-                    {u.isVerified ? "Unverify" : "Verify"}
-                  </Button>
-                  {!isSelf && (isAdmin ? (
-                    <Button size="sm" variant="subtle" loading={busy === u.id + "removeAdmin"} onClick={() => act(u.id, "removeAdmin")}>
-                      <ShieldOff size={14} /> Remove admin
-                    </Button>
-                  ) : (
-                    <>
-                      <Button size="sm" variant="subtle" loading={busy === u.id + "makeAdmin"} onClick={() => act(u.id, "makeAdmin")}>
-                        <Shield size={14} /> Make admin
-                      </Button>
-                      {u.status !== "active" && <Button size="sm" variant="subtle" onClick={() => act(u.id, "activate")}>Reactivate</Button>}
-                      {u.status === "active" && <Button size="sm" variant="subtle" onClick={() => act(u.id, "suspend")}>Suspend</Button>}
-                      {u.status !== "banned" && <Button size="sm" variant="danger" onClick={() => act(u.id, "ban")}>Ban</Button>}
-                    </>
-                  ))}
-                </div>
-              </div>
-            );
-          })}
-          {shown.length === 0 && <EmptyState icon={<Users2 size={22} />} title="No users found" />}
-        </div>
-      )}
-    </div>
-  );
-}
-
-function ContentTab() {
-  const { toast } = useToast();
-  const [q, setQ] = useState("");
-  const [posts, setPosts] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [busy, setBusy] = useState<string | null>(null);
-
-  async function load() {
-    setLoading(true);
-    const r = await api.get(`/api/admin/posts?q=${encodeURIComponent(q)}`).catch(() => ({ posts: [] }));
-    setPosts(r.posts);
-    setLoading(false);
-  }
-  useEffect(() => {
-    const t = setTimeout(load, 250);
-    return () => clearTimeout(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [q]);
-
-  async function remove(id: string) {
-    setBusy(id);
-    try {
-      await api.del(`/api/admin/posts/${id}`);
-      setPosts((ps) => ps.map((p) => (p.id === id ? { ...p, status: "removed" } : p)));
-      toast("Post removed", "success");
-    } catch (e: any) {
-      toast(e?.message || "Failed", "error");
-    } finally {
-      setBusy(null);
     }
   }
 
@@ -364,100 +243,45 @@ function ContentTab() {
     <div>
       <div className="mb-4 flex items-center gap-2 rounded-xl bg-surface-2 px-3">
         <Search size={16} className="text-faint" />
-        <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search posts by caption or @author" className="flex-1 bg-transparent py-2.5 text-sm outline-none" />
+        <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search users by name, @username or email" className="flex-1 bg-transparent py-2.5 text-sm outline-none" />
       </div>
       {loading ? (
         <div className="grid place-items-center py-16"><Spinner /></div>
-      ) : posts.length === 0 ? (
-        <EmptyState icon={<ImageIcon size={22} />} title="No posts found" />
       ) : (
-        <div className="grid gap-2 sm:grid-cols-2">
-          {posts.map((p) => (
-            <div key={p.id} className="card flex items-center gap-3 p-3">
-              <Link href={`/p/${p.id}`} className="h-14 w-14 shrink-0 overflow-hidden rounded-lg bg-surface-2">
-                {p.thumb && /* eslint-disable-next-line @next/next/no-img-element */ <img src={p.thumb} alt="" className="h-full w-full object-cover" />}
-              </Link>
+        <div className="space-y-2">
+          {users.map((u) => (
+            <div key={u.id} className="card flex flex-wrap items-center gap-3 p-3">
+              <Link href={`/${u.username}`}><Avatar src={u.avatar} name={u.displayName} size={44} /></Link>
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm">{p.caption || "(no caption)"}</p>
-                <p className="truncate text-xs text-faint">
-                  @{p.author?.username} · <Heart size={11} className="inline" /> {formatCount(p.likes)} · <MessageSquare size={11} className="inline" /> {formatCount(p.comments)} · {timeAgo(p.createdAt)}
-                  {p.isClip && <span className="text-muted"> · clip</span>}
-                  {p.status === "removed" && <span className="text-danger"> · removed</span>}
+                <p className="flex items-center gap-1 text-sm font-semibold">
+                  {u.username}
+                  {u.isVerified && <VerifiedBadge size={14} type={u.badgeType || "blue"} />}
+                  {u.role === "admin" && <span className="rounded bg-accent/15 px-1.5 text-xs text-accent">admin</span>}
+                  <span className={cn("rounded px-1.5 text-xs", u.status === "active" ? "bg-success/15 text-success" : u.status === "suspended" ? "bg-warn/15 text-warn" : "bg-danger/15 text-danger")}>{u.status}</span>
                 </p>
+                <p className="truncate text-xs text-faint">{u.email} Â· {formatCount(u.followers)} followers Â· {u.posts} posts</p>
               </div>
-              {p.status === "removed" ? (
-                <span className="rounded-lg bg-danger/15 px-2.5 py-1 text-xs font-semibold text-danger">Removed</span>
-              ) : (
-                <Button size="sm" variant="danger" loading={busy === p.id} onClick={() => remove(p.id)}><Trash2 size={14} /> Remove</Button>
+              {u.role !== "admin" && (
+                <div className="flex flex-wrap gap-1.5">
+                  {u.status !== "active" && <Button size="sm" variant="subtle" onClick={() => act(u.id, "activate")}>Reactivate</Button>}
+                  {u.status === "active" && <Button size="sm" variant="subtle" onClick={() => act(u.id, "suspend")}>Suspend</Button>}
+                  {u.status !== "banned" && <Button size="sm" variant="danger" onClick={() => act(u.id, "ban")}>Ban</Button>}
+                  {u.isVerified ? (
+                    <Button size="sm" variant="ghost" onClick={() => act(u.id, "unverify")}>Unverify</Button>
+                  ) : (
+                    <>
+                      <Button size="sm" variant="ghost" onClick={() => act(u.id, "verify")}>Blue â</Button>
+                      <Button size="sm" variant="ghost" onClick={() => act(u.id, "verify-gold")}>Gold â</Button>
+                      <Button size="sm" variant="ghost" onClick={() => act(u.id, "verify-gray")}>Gray â</Button>
+                    </>
+                  )}
+                </div>
               )}
             </div>
           ))}
+          {users.length === 0 && <EmptyState icon={<Users2 size={22} />} title="No users found" />}
         </div>
       )}
-    </div>
-  );
-}
-
-function SystemTab() {
-  const { toast } = useToast();
-  const [maintenanceMode, setMaintenanceMode] = useState(false);
-  const [maintenanceMessage, setMaintenanceMessage] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-
-  useEffect(() => {
-    api
-      .get("/api/admin/config")
-      .then((c) => {
-        setMaintenanceMode(!!c.maintenanceMode);
-        setMaintenanceMessage(c.maintenanceMessage || "");
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, []);
-
-  async function save() {
-    setSaving(true);
-    try {
-      await api.patch("/api/admin/config", { maintenanceMode, maintenanceMessage });
-      toast("Settings saved", "success");
-    } catch (e: any) {
-      toast(e?.message || "Failed to save", "error");
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  if (loading) return <div className="grid place-items-center py-20"><Spinner /></div>;
-
-  return (
-    <div className="card p-5">
-      <p className="text-sm font-semibold">Maintenance mode</p>
-      <p className="mt-1 text-xs text-muted">
-        Enabling maintenance mode makes the site inaccessible to everyone except admins.
-      </p>
-
-      <div className="mt-4 flex items-center justify-between gap-3 rounded-xl bg-surface-2 p-3">
-        <div className="min-w-0">
-          <p className="text-sm font-semibold">Enable maintenance mode</p>
-          <p className="text-xs text-muted">Non-admins are redirected to the maintenance page.</p>
-        </div>
-        <Toggle checked={maintenanceMode} onChange={setMaintenanceMode} label="Maintenance mode" />
-      </div>
-
-      <div className="mt-4">
-        <Textarea
-          label="Maintenance message"
-          rows={3}
-          value={maintenanceMessage}
-          onChange={(e) => setMaintenanceMessage(e.target.value)}
-          placeholder="Vortex is down for scheduled maintenance. Please check back soon."
-        />
-      </div>
-
-      <div className="mt-4">
-        <Button variant="primary" onClick={save} loading={saving}>Save</Button>
-      </div>
     </div>
   );
 }
