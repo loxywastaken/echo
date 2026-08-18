@@ -20,7 +20,6 @@ export function ExploreClient() {
   const tag = params.get("tag");
 
   const [posts, setPosts] = useState<Post[]>([]);
-  const [tagCount, setTagCount] = useState(0);
   const [trending, setTrending] = useState<{ tag: string; count: number }[]>([]);
   const [creators, setCreators] = useState<any[]>([]);
   const [cursor, setCursor] = useState<string | null>(null);
@@ -35,7 +34,6 @@ export function ExploreClient() {
     setLoading(true);
     api.get(`/api/hashtags/${encodeURIComponent(tag)}`).then((r) => {
       setPosts(r.posts);
-      setTagCount(r.count ?? r.posts.length);
       setDone(true);
       setLoading(false);
     });
@@ -79,7 +77,7 @@ export function ExploreClient() {
           </span>
           <div>
             <h1 className="font-display text-2xl font-bold">#{tag}</h1>
-            <p className="text-sm text-muted">{formatCount(tagCount)} posts</p>
+            <p className="text-sm text-muted">{formatCount(posts.length)} posts</p>
           </div>
         </div>
         {loading ? (
@@ -144,7 +142,7 @@ export function ExploreClient() {
                 </Link>
                 <Link href={`/${c.username}`} className="flex items-center gap-0.5 truncate text-xs font-semibold">
                   <span className="truncate">{c.username}</span>
-                  {c.isVerified && <VerifiedBadge size={11} />}
+                  {c.isVerified && <VerifiedBadge size={11} type={c.badgeType || "blue"} />}
                 </Link>
                 <FollowButton username={c.username} initialFollowing={false} isPrivate={c.isPrivate} />
               </div>
