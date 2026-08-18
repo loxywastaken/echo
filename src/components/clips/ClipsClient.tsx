@@ -45,7 +45,7 @@ export function ClipsClient() {
   if (clips.length === 0)
     return (
       <div className="grid h-[70vh] place-items-center">
-        <EmptyState icon={<Clapperboard size={26} />} title="No clips yet" hint="Share a video as a Vortex Clip to get things started." />
+        <EmptyState icon={<Clapperboard size={26} />} title="No clips yet" hint="Share a video as an Echo Clip to get things started." />
       </div>
     );
 
@@ -105,14 +105,7 @@ function ClipItem({ clip, muted, setMuted }: { clip: Post; muted: boolean; setMu
     setLiked(next);
     setLikeCount((c) => c + (next ? 1 : -1));
     const r = await api.post(`/api/posts/${clip.id}/like`).catch(() => null);
-    if (r) {
-      setLiked(r.liked);
-      setLikeCount(r.likeCount);
-    } else {
-      // Request failed — roll the optimistic update back.
-      setLiked(!next);
-      setLikeCount((c) => c + (next ? -1 : 1));
-    }
+    if (r) { setLiked(r.liked); setLikeCount(r.likeCount); }
   }
   async function save() {
     setSaved((s) => !s);
@@ -179,11 +172,11 @@ function ClipItem({ clip, muted, setMuted }: { clip: Post; muted: boolean; setMu
         <Link href={`/${clip.author.username}`} className="mb-2 flex items-center gap-2">
           <Avatar src={clip.author.avatar} name={clip.author.displayName} size={34} />
           <span className="text-sm font-semibold">{clip.author.username}</span>
-          {clip.author.isVerified && <VerifiedBadge size={13} />}
+          {clip.author.isVerified && <VerifiedBadge size={13} type={clip.author.badgeType || "blue"} />}
         </Link>
         {clip.caption && <p className="mb-1.5 line-clamp-2 text-sm">{clip.caption}</p>}
         <p className="flex items-center gap-1.5 text-xs text-white/80">
-          <Music2 size={13} /> {clip.audioName || `Original audio · ${clip.author.username}`}
+          <Music2 size={13} /> {clip.audioName || `Original audio Â· ${clip.author.username}`}
         </p>
       </div>
 
