@@ -2,7 +2,7 @@
 // enums keeps the schema SQLite-portable while staying type-safe here.
 
 export const BRAND = {
-  name: "Echo",
+  name: "Vortex",
   tagline: "Share what echoes.",
   description: "A place for the moments worth repeating.",
   wordmark: "Vortex",
