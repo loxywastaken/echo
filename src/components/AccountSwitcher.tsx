@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Check, ChevronDown, LogOut, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Avatar } from "@/components/ui/Avatar";
+import { VerifiedBadge } from "@/components/ui/misc";
 import { useAuth, Me } from "@/context/AuthContext";
 import { api } from "@/lib/client";
 import { cn } from "@/lib/utils";
@@ -14,6 +15,7 @@ type LinkedAccount = {
   displayName: string;
   avatar: string | null;
   isVerified: boolean;
+  badgeType: "blue" | "gold" | "gray";
   isActive: boolean;
 };
 
@@ -68,7 +70,7 @@ export function AccountSwitcher({ compact = false }: { compact?: boolean }) {
       setOpen(false);
       router.refresh();
     } catch {
-      // Session expired — remove from list
+      // Session expired â remove from list
       setAccounts((prev) => prev.filter((a) => a.userId !== targetUserId));
     } finally {
       setSwitching(false);
@@ -146,9 +148,7 @@ export function AccountSwitcher({ compact = false }: { compact?: boolean }) {
                         {acct.displayName}
                       </span>
                       {acct.isVerified && (
-                        <svg viewBox="0 0 24 24" className="h-3.5 w-3.5 shrink-0 fill-accent" aria-label="Verified">
-                          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
-                        </svg>
+                        <VerifiedBadge size={14} type={acct.badgeType || "blue"} />
                       )}
                     </span>
                     <span className="block truncate text-xs text-faint">@{acct.username}</span>
@@ -159,7 +159,7 @@ export function AccountSwitcher({ compact = false }: { compact?: boolean }) {
                 </button>
               ))
             ) : (
-              /* Single account — show current user */
+              /* Single account â show current user */
               <div className="flex items-center gap-3 px-4 py-2.5">
                 <Avatar src={user.avatar} name={user.displayName} size={38} />
                 <span className="min-w-0 flex-1">
