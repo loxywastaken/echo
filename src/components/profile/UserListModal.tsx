@@ -59,7 +59,7 @@ export function UserListModal({
               </Link>
               <div className="min-w-0 flex-1">
                 <Link href={`/${u.username}`} onClick={onClose} className="flex items-center gap-1 text-sm font-semibold hover:underline">
-                  <span className="truncate">{u.username}</span> {u.isVerified && <VerifiedBadge size={12} />}
+                  <span className="truncate">{u.username}</span> {u.isVerified && <VerifiedBadge size={12} type={u.badgeType || "blue"} />}
                 </Link>
                 <p className="truncate text-xs text-faint">{u.displayName}</p>
               </div>
