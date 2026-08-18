@@ -34,7 +34,7 @@ function label(n: NotificationItem): string {
     case "mention": return "mentioned you";
     case "tag": return "tagged you in a post";
     case "message": return n.message ? `sent: ${n.message}` : "sent you a message";
-    case "admin": return n.message || "Notice from Vortex";
+    case "admin": return n.message || "Notice from Echo";
     default: return "interacted with you";
   }
 }
@@ -84,7 +84,7 @@ export function NotificationsClient() {
                       <Avatar src={r.user.avatar} name={r.user.displayName} size={44} />
                     </Link>
                     <div className="min-w-0 flex-1">
-                      <p className="flex items-center gap-1 text-sm font-semibold">{r.user.username} {r.user.isVerified && <VerifiedBadge size={12} />}</p>
+                      <p className="flex items-center gap-1 text-sm font-semibold">{r.user.username} {r.user.isVerified && <VerifiedBadge size={12} type={r.user.badgeType || "blue"} />}</p>
                       <p className="truncate text-xs text-faint">wants to follow you</p>
                     </div>
                     <Button size="sm" variant="primary" onClick={() => accept(r.id)}><Check size={15} /></Button>
@@ -129,7 +129,7 @@ export function NotificationsClient() {
                     </Link>
                   )}
                   {n.type === "follow" && n.actor && (
-                    <FollowButton username={n.actor.username} initialFollowing={n.followsActor} isPrivate={n.actor.isPrivate} />
+                    <FollowButton username={n.actor.username} initialFollowing={false} isPrivate={n.actor.isPrivate} />
                   )}
                 </div>
               ))}
