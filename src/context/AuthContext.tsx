@@ -16,6 +16,7 @@ export type Me = {
   role: string;
   status: string;
   isVerified: boolean;
+  badgeType: "blue" | "gold" | "gray";
   isPrivate: boolean;
   emailVerified: boolean;
   theme: "dark" | "light" | "system";
