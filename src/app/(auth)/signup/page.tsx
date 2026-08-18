@@ -48,7 +48,7 @@ export default function SignupPage() {
     try {
       const res = await api.post("/api/auth/signup", form);
       await refresh();
-      toast("Welcome to Vortex! 🎉", "success");
+      toast("Welcome to Vortex! ð", "success");
       if (res.verifyLink) console.log("[echo] Verify link:", res.verifyLink);
       router.push("/");
     } catch (err) {
