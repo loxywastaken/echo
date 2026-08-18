@@ -42,6 +42,7 @@ export const GET = route(async (_req: NextRequest, { params }: Ctx) => {
       website: user.website,
       location: user.location,
       isVerified: user.isVerified,
+      badgeType: user.badgeType ?? "blue",
       isPrivate: user.isPrivate,
       status: user.status,
       counts: {
