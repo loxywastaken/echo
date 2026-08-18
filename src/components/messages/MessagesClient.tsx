@@ -68,12 +68,12 @@ export function MessagesClient({ activeId }: { activeId?: string }) {
                 <div className="min-w-0 flex-1">
                   <p className="flex items-center gap-1 text-sm font-semibold">
                     <span className="truncate">{titleFor(c)}</span>
-                    {!c.isGroup && c.members[0]?.isVerified && <VerifiedBadge size={12} />}
+                    {!c.isGroup && c.members[0]?.isVerified && <VerifiedBadge size={12} type={c.members[0]?.badgeType || "blue"} />}
                   </p>
                   <p className={cn("truncate text-xs", c.unread ? "font-semibold text-text" : "text-faint")}>
                     {c.lastMessage?.isMine ? "You: " : ""}
                     {c.lastMessage?.deleted ? "Message deleted" : c.lastMessage?.body || (c.lastMessage?.mediaUrl ? "Sent an attachment" : "No messages yet")}
-                    {c.lastMessage && <span className="text-faint"> · {timeAgo(c.lastMessage.createdAt)}</span>}
+                    {c.lastMessage && <span className="text-faint"> Â· {timeAgo(c.lastMessage.createdAt)}</span>}
                   </p>
                 </div>
                 {c.unread > 0 && <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-accent-gradient" />}
