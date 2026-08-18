@@ -126,8 +126,8 @@ export function PostCard({ post: initial, onDeleted }: { post: Post; onDeleted?:
             <Link href={`/${post.author.username}`} className="truncate text-sm font-semibold hover:underline">
               {post.author.username}
             </Link>
-            {post.author.isVerified && <VerifiedBadge size={14} />}
-            <span className="text-faint">·</span>
+            {post.author.isVerified && <VerifiedBadge size={14} type={post.author.badgeType || "blue"} />}
+            <span className="text-faint">Â·</span>
             <span className="shrink-0 text-xs text-faint">{timeAgo(post.createdAt)}</span>
           </div>
           {post.location && (
@@ -224,7 +224,7 @@ export function PostCard({ post: initial, onDeleted }: { post: Post; onDeleted?:
             onChange={(e) => setCaption(e.target.value)}
             rows={5}
             className="input-base resize-none"
-            placeholder="Write a caption…"
+            placeholder="Write a captionâ¦"
           />
           <div className="flex justify-end gap-2">
             <Button variant="ghost" onClick={() => { setCaption(post.caption); setEditing(false); }}>Cancel</Button>
