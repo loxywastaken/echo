@@ -11,7 +11,7 @@ import {
   USER_STATUS,
 } from "./constants";
 
-// ── Passwords ────────────────────────────────────────────────────────────────────────────────
+// ââ Passwords ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 export async function hashPassword(pw: string) {
   return bcrypt.hash(pw, 10);
 }
@@ -19,7 +19,7 @@ export async function verifyPassword(pw: string, hash: string) {
   return bcrypt.compare(pw, hash);
 }
 
-// ── Tokens ─────────────────────────────────────────────────────────────────────────────────
+// ââ Tokens âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 export function randomToken(bytes = 32) {
   return crypto.randomBytes(bytes).toString("hex");
 }
@@ -27,7 +27,7 @@ export function sha256(input: string) {
   return crypto.createHash("sha256").update(input).digest("hex");
 }
 
-// ── Multi-account cookie helpers ─────────────────────────────────────────────────────────
+// ââ Multi-account cookie helpers âââââââââââââââââââââââââââââââââââââââââââââ
 type StoredAccount = { userId: string; token: string };
 
 function getAccountsCookie(): StoredAccount[] {
@@ -50,7 +50,7 @@ function setAccountsCookie(accounts: StoredAccount[], expires: Date) {
   });
 }
 
-// ── Sessions (opaque token stored hashed server-side) ───────────────────────────────────
+// ââ Sessions (opaque token stored hashed server-side) âââââââââââââââââââââââââ
 export type DeviceInfo = { userAgent?: string; ip?: string };
 
 function labelDevice(ua?: string): string {
@@ -171,7 +171,7 @@ export class AuthError extends Error {
   }
 }
 
-// ── Multi-account: get linked accounts ───────────────────────────────────────────────────
+// ââ Multi-account: get linked accounts âââââââââââââââââââââââââââââââââââââââ
 
 /** Returns minimal info for all stored accounts (for the switcher dropdown). */
 export async function getLinkedAccounts() {
@@ -185,7 +185,7 @@ export async function getLinkedAccounts() {
     accounts.map(async (acct) => {
       const session = await prisma.session.findUnique({
         where: { tokenHash: sha256(acct.token) },
-        include: { user: { select: { id: true, username: true, displayName: true, avatar: true, isVerified: true } } },
+        include: { user: { select: { id: true, username: true, displayName: true, avatar: true, isVerified: true, badgeType: true } } },
       });
       if (!session || session.expiresAt < new Date()) return null;
       if (session.user) {
@@ -195,6 +195,7 @@ export async function getLinkedAccounts() {
           displayName: session.user.displayName,
           avatar: session.user.avatar,
           isVerified: session.user.isVerified,
+          badgeType: (session.user as any).badgeType ?? "blue",
           isActive: acct.token === activeToken,
         };
       }
