@@ -69,15 +69,12 @@ export function CommentsModal({
 
   async function del(c: Comment, parentId?: string) {
     await api.del(`/api/comments/${c.id}`).catch(() => {});
-    // Deleting a top-level comment cascades its replies server-side, so remove
-    // those from the count too.
-    const removed = parentId ? 1 : 1 + (c.replies?.length ?? 0);
     setComments((cs) =>
       parentId
         ? cs.map((p) => (p.id === parentId ? { ...p, replies: p.replies?.filter((r) => r.id !== c.id) } : p))
         : cs.filter((x) => x.id !== c.id)
     );
-    onCountChange?.(Math.max(0, total - removed));
+    onCountChange?.(Math.max(0, total - 1));
   }
 
   return (
@@ -114,7 +111,7 @@ export function CommentsModal({
                 value={text}
                 onChange={(e) => setText(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && send()}
-                placeholder="Add a comment…"
+                placeholder="Add a commentâ¦"
                 className="input-base flex-1"
               />
               <button
@@ -164,7 +161,7 @@ function CommentRow({
           <Link href={`/${comment.author.username}`} className="mr-1.5 font-semibold hover:underline">
             {comment.author.username}
           </Link>
-          {comment.author.isVerified && <VerifiedBadge size={12} className="mb-0.5 mr-1 inline" />}
+          {comment.author.isVerified && <VerifiedBadge size={12} type={comment.author.badgeType || "blue"} className="mb-0.5 mr-1 inline" />}
           <RichText text={comment.body} />
         </p>
         <div className="mt-1 flex items-center gap-4 text-xs text-faint">
