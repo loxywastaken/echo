@@ -118,8 +118,8 @@ export function AccountSwitcher({ compact = false }: { compact?: boolean }) {
       {open && (
         <div
           className={cn(
-            "absolute z-50 w-72 rounded-2xl border border-border bg-surface shadow-xl animate-fade-in-up",
-            compact ? "bottom-full left-0 mb-2" : "bottom-full left-0 mb-2 xl:left-auto xl:right-0"
+            "absolute z-50 rounded-2xl border border-border bg-surface shadow-xl animate-fade-in-up",
+            compact ? "bottom-full left-0 mb-2 w-64" : "bottom-full left-0 mb-2 w-[calc(100vw-2rem)] min-w-[240px] max-w-[260px] xl:w-[248px]"
           )}
         >
           {/* Accounts list */}
