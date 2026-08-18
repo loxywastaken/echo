@@ -71,7 +71,7 @@ export function SearchModal({ open, onClose }: { open: boolean; onClose: () => v
             autoFocus
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="Search people, tags, places…"
+            placeholder="Search people, tags, placesâ¦"
             className="flex-1 bg-transparent text-sm outline-none"
           />
           {q && (
@@ -108,7 +108,7 @@ export function SearchModal({ open, onClose }: { open: boolean; onClose: () => v
                   ))}
                 </>
               ) : (
-                <p className="px-2 py-8 text-center text-sm text-faint">Search Vortex for people, hashtags and places.</p>
+                <p className="px-2 py-8 text-center text-sm text-faint">Search Echo for people, hashtags and places.</p>
               )}
             </div>
           ) : loading ? (
@@ -126,9 +126,9 @@ export function SearchModal({ open, onClose }: { open: boolean; onClose: () => v
                   <Avatar src={u.avatar} name={u.displayName} size={44} />
                   <div className="min-w-0 flex-1">
                     <p className="flex items-center gap-1 text-sm font-semibold">
-                      {u.username} {u.isVerified && <VerifiedBadge size={13} />}
+                      {u.username} {u.isVerified && <VerifiedBadge size={13} type={u.badgeType || "blue"} />}
                     </p>
-                    <p className="truncate text-xs text-faint">{u.displayName} · {formatCount(u.followers)} followers</p>
+                    <p className="truncate text-xs text-faint">{u.displayName} Â· {formatCount(u.followers)} followers</p>
                   </div>
                 </button>
               ))}
@@ -152,7 +152,7 @@ export function SearchModal({ open, onClose }: { open: boolean; onClose: () => v
                 </button>
               ))}
               {res.people.length + res.hashtags.length + res.locations.length === 0 && (
-                <p className="py-12 text-center text-sm text-faint">No results for “{q}”.</p>
+                <p className="py-12 text-center text-sm text-faint">No results for â{q}â.</p>
               )}
             </div>
           ) : null}
