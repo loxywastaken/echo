@@ -29,7 +29,7 @@ function LoginForm() {
     try {
       const res = await api.post("/api/auth/login", { identifier, password, rememberMe: remember });
       await refresh();
-      if (res.suspended) toast("Your account is suspended — some actions are limited.", "info");
+      if (res.suspended) toast("Your account is suspended â some actions are limited.", "info");
       if (isAddAccount) {
         toast("Account added! You can now switch between accounts.", "success");
       }
@@ -58,7 +58,7 @@ function LoginForm() {
       <p className="mt-1 text-sm text-muted">
         {isAddAccount
           ? "Sign in with another account to switch between them."
-          : "Sign in to continue to Echo."}
+          : "Sign in to continue to Vortex."}
       </p>
 
       <form onSubmit={submit} className="mt-7 space-y-4">
@@ -76,7 +76,7 @@ function LoginForm() {
           autoComplete="current-password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          placeholder="••••••••"
+          placeholder="â¢â¢â¢â¢â¢â¢â¢â¢"
           required
         />
         <div className="flex items-center justify-between">
@@ -96,16 +96,16 @@ function LoginForm() {
       {!isAddAccount && (
         <>
           <p className="mt-6 text-center text-sm text-muted">
-            New to Echo?{" "}
+            New to Vortex?{" "}
             <Link href="/signup" className="font-semibold text-accent hover:underline">
               Create an account
             </Link>
           </p>
 
           <div className="mt-8 rounded-xl border border-border bg-surface/60 p-3 text-center text-xs text-faint">
-            Demo login — <span className="text-muted">maya</span> / <span className="text-muted">password123</span>
+            Demo login â <span className="text-muted">maya</span> / <span className="text-muted">password123</span>
             <br />
-            Admin — <span className="text-muted">admin</span> / <span className="text-muted">password123</span>
+            Admin â <span className="text-muted">admin</span> / <span className="text-muted">password123</span>
           </div>
         </>
       )}
