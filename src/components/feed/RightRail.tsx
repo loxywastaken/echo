@@ -50,7 +50,7 @@ export function RightRail() {
               <div className="min-w-0 flex-1">
                 <Link href={`/${c.username}`} className="flex items-center gap-1 text-sm font-semibold hover:underline">
                   <span className="truncate">{c.username}</span>
-                  {c.isVerified && <VerifiedBadge size={12} />}
+                  {c.isVerified && <VerifiedBadge size={12} type={c.badgeType || "blue"} />}
                 </Link>
                 <p className="truncate text-xs text-faint">{formatCount(c.followers)} followers</p>
               </div>
@@ -66,7 +66,7 @@ export function RightRail() {
         <Link href="/clips" className="hover:underline">Clips</Link>
         <Link href="/guidelines" className="hover:underline">Guidelines</Link>
         <Link href="/settings" className="hover:underline">Settings</Link>
-        <span className="mt-2 block w-full text-faint/70">© {new Date().getFullYear()} Vortex</span>
+        <span className="mt-2 block w-full text-faint/70">Â© {new Date().getFullYear()} Echo</span>
       </div>
     </div>
   );
