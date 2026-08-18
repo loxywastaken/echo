@@ -22,6 +22,7 @@ export function publicUser(u: any) {
     displayName: u.displayName,
     avatar: u.avatar ?? null,
     isVerified: !!u.isVerified,
+    badgeType: u.badgeType ?? "blue",
     isPrivate: !!u.isPrivate,
     bio: u.bio ?? null,
   };
@@ -90,7 +91,7 @@ export function serializeStory(s: any, viewerId?: string) {
   };
 }
 
-export function serializeNotification(n: any, opts?: { followsActor?: boolean }) {
+export function serializeNotification(n: any) {
   return {
     id: n.id,
     type: n.type,
@@ -102,8 +103,6 @@ export function serializeNotification(n: any, opts?: { followsActor?: boolean })
       ? { id: n.post.id, thumb: n.post.media?.[0]?.url ?? null }
       : null,
     commentId: n.commentId ?? null,
-    // Whether the viewer already follows the actor (drives the follow-back button).
-    followsActor: !!opts?.followsActor,
   };
 }
 
