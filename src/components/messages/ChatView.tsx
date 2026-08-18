@@ -2,16 +2,15 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import Link from "next/link";
-import { ArrowLeft, ImageIcon, Smile, Send, Sticker, X, Trash2, Reply, Heart, Phone, Video } from "lucide-react";
+import { ArrowLeft, ImageIcon, Smile, Send, Sticker, X, Trash2, Reply, Heart } from "lucide-react";
 import { Avatar } from "@/components/ui/Avatar";
 import { VerifiedBadge, Spinner } from "@/components/ui/misc";
 import { api } from "@/lib/client";
 import { useAuth } from "@/context/AuthContext";
-import { useCall } from "@/context/CallContext";
 import type { Message, PublicUser } from "@/lib/types";
 import { clockTime, cn } from "@/lib/utils";
 
-const EMOJIS = ["❤️", "😂", "🔥", "👏", "😮", "😢", "🙏", "👍"];
+const EMOJIS = ["â¤ï¸", "ð", "ð¥", "ð", "ð®", "ð¢", "ð", "ð"];
 const GIFS = [
   "https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif",
   "https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif",
@@ -21,7 +20,6 @@ const GIFS = [
 
 export function ChatView({ conversationId, onBack }: { conversationId: string; onBack?: () => void }) {
   const { user } = useAuth();
-  const { startCall, busy: callBusy } = useCall();
   const [convo, setConvo] = useState<{ isGroup: boolean; name: string | null; members: (PublicUser & { online: boolean })[] } | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
@@ -176,34 +174,13 @@ export function ChatView({ conversationId, onBack }: { conversationId: string; o
           <Avatar src={other?.avatar} name={title || "?"} size={38} />
           <div className="min-w-0">
             <p className="flex items-center gap-1 truncate text-sm font-semibold">
-              {title} {other?.isVerified && <VerifiedBadge size={13} />}
+              {title} {other?.isVerified && <VerifiedBadge size={13} type={other?.badgeType || "blue"} />}
             </p>
             <p className="text-xs text-faint">
-              {typing ? <span className="text-accent">typing…</span> : other?.online ? "Active now" : "Offline"}
+              {typing ? <span className="text-accent">typingâ¦</span> : other?.online ? "Active now" : "Offline"}
             </p>
           </div>
         </Link>
-
-        {other && !convo?.isGroup && (
-          <div className="ml-auto flex items-center gap-1">
-            <button
-              onClick={() => startCall(other, "audio")}
-              disabled={callBusy}
-              className="press grid h-9 w-9 place-items-center rounded-full text-muted hover:bg-surface-2 hover:text-text disabled:opacity-40"
-              aria-label="Voice call"
-            >
-              <Phone size={19} />
-            </button>
-            <button
-              onClick={() => startCall(other, "video")}
-              disabled={callBusy}
-              className="press grid h-9 w-9 place-items-center rounded-full text-muted hover:bg-surface-2 hover:text-text disabled:opacity-40"
-              aria-label="Video call"
-            >
-              <Video size={20} />
-            </button>
-          </div>
-        )}
       </header>
 
       {/* messages */}
@@ -219,7 +196,7 @@ export function ChatView({ conversationId, onBack }: { conversationId: string; o
               <div className={cn("relative max-w-[72%]", m.isMine ? "items-end" : "items-start")}>
                 {m.replyTo && (
                   <div className={cn("mb-0.5 rounded-lg bg-surface-2 px-2 py-1 text-xs text-faint", m.isMine ? "text-right" : "")}>
-                    ↩︎ {m.replyTo.body?.slice(0, 60) || "media"}
+                    â©ï¸ {m.replyTo.body?.slice(0, 60) || "media"}
                   </div>
                 )}
                 {m.deleted ? (
@@ -312,7 +289,7 @@ export function ChatView({ conversationId, onBack }: { conversationId: string; o
             value={text}
             onChange={(e) => onType(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && (e.preventDefault(), send())}
-            placeholder="Message…"
+            placeholder="Messageâ¦"
             className="input-base flex-1 !rounded-full"
           />
           <button onClick={() => send()} disabled={sending || (!text.trim())} className="press grid h-10 w-10 shrink-0 place-items-center rounded-full bg-accent-gradient text-white disabled:opacity-40">
