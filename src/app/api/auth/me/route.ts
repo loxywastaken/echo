@@ -29,6 +29,7 @@ export const GET = route(async () => {
       role: user.role,
       status: user.status,
       isVerified: user.isVerified,
+      badgeType: user.badgeType ?? "blue",
       isPrivate: user.isPrivate,
       emailVerified: user.emailVerified,
       theme: user.theme,
