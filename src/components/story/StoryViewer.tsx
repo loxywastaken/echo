@@ -115,7 +115,7 @@ export function StoryViewer({
     if (!reply.trim()) return;
     try {
       const { id } = await api.post<{ id: string }>("/api/conversations", { userId: story.author.id });
-      await api.post(`/api/conversations/${id}/messages`, { body: `↩️ Replied to your story: ${reply}` });
+      await api.post(`/api/conversations/${id}/messages`, { body: `â©ï¸ Replied to your story: ${reply}` });
       toast("Reply sent", "success");
       setReply("");
     } catch {
@@ -168,7 +168,7 @@ export function StoryViewer({
         <div className="absolute left-0 right-0 top-0 z-10 flex items-center gap-2 px-3 pt-6">
           <Avatar src={story.author.avatar} name={story.author.displayName} size={34} />
           <span className="text-sm font-semibold text-white">{story.author.username}</span>
-          {story.author.isVerified && <VerifiedBadge size={13} />}
+          {story.author.isVerified && <VerifiedBadge size={13} type={story.author.badgeType || "blue"} />}
           <span className="text-xs text-white/60">{timeAgo(story.createdAt)}</span>
         </div>
 
@@ -177,7 +177,7 @@ export function StoryViewer({
           {story.type === "text" ? (
             <div
               className="grid h-full w-full place-items-center px-8 text-center"
-              style={{ background: story.bgColor || "linear-gradient(135deg,#3a3a40,#0a0a0b)" }}
+              style={{ background: story.bgColor || "linear-gradient(135deg,#7c5cff,#22d3ee)" }}
             >
               <p className="font-display text-2xl font-bold text-white">{story.text}</p>
             </div>
@@ -217,10 +217,10 @@ export function StoryViewer({
                 onKeyDown={(e) => e.key === "Enter" && sendReply()}
                 onFocus={() => setPaused(true)}
                 onBlur={() => setPaused(false)}
-                placeholder={`Reply to ${story.author.username}…`}
+                placeholder={`Reply to ${story.author.username}â¦`}
                 className="flex-1 rounded-full border border-white/30 bg-transparent px-4 py-2 text-sm text-white placeholder:text-white/50 focus:outline-none"
               />
-              <button onClick={() => react("❤️")} className="press text-white" aria-label="React">
+              <button onClick={() => react("â¤ï¸")} className="press text-white" aria-label="React">
                 <Heart size={22} />
               </button>
               <button onClick={sendReply} className="press text-white" aria-label="Send">
