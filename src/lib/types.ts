@@ -6,6 +6,7 @@ export type PublicUser = {
   displayName: string;
   avatar: string | null;
   isVerified: boolean;
+  badgeType: "blue" | "gold" | "gray";
   isPrivate: boolean;
   bio?: string | null;
 };
@@ -79,7 +80,6 @@ export type NotificationItem = {
   actor: PublicUser | null;
   post: { id: string; thumb: string | null } | null;
   commentId: string | null;
-  followsActor: boolean;
 };
 
 export type Message = {
