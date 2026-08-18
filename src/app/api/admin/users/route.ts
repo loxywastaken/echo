@@ -29,6 +29,7 @@ export const GET = route(async (req: NextRequest) => {
       role: u.role,
       status: u.status,
       isVerified: u.isVerified,
+      badgeType: u.badgeType ?? "blue",
       createdAt: u.createdAt,
       posts: u._count.posts,
       followers: u._count.followers,
@@ -36,36 +37,16 @@ export const GET = route(async (req: NextRequest) => {
   });
 });
 
-// Moderate a user: (un)verify (incl. yourself), grant/revoke admin, suspend/ban/reactivate.
+// Suspend / ban / reactivate / (un)verify a user.
 export const PATCH = route(async (req: NextRequest) => {
   const me = await requireUser();
   if (me.role !== "admin") return forbidden();
   const { id, action } = await req.json().catch(() => ({}));
   if (!id) return bad("Missing user id.");
+  if (id === me.id) return bad("You can't moderate your own account.");
 
   const target = await prisma.user.findUnique({ where: { id } });
   if (!target) return bad("User not found.");
-  const isSelf = id === me.id;
-
-  // Verification is non-destructive — allowed on anyone, including yourself.
-  if (action === "verify" || action === "unverify") {
-    await prisma.user.update({ where: { id }, data: { isVerified: action === "verify" } });
-    return ok({ ok: true });
-  }
-
-  // Role management (owner tools).
-  if (action === "makeAdmin") {
-    await prisma.user.update({ where: { id }, data: { role: "admin" } });
-    return ok({ ok: true });
-  }
-  if (action === "removeAdmin") {
-    if (isSelf) return bad("You can't remove your own admin access.");
-    await prisma.user.update({ where: { id }, data: { role: "user" } });
-    return ok({ ok: true });
-  }
-
-  // Destructive moderation: never on yourself, never on another admin.
-  if (isSelf) return bad("You can't suspend or ban your own account.");
   if (target.role === "admin") return bad("You can't moderate another admin.");
 
   switch (action) {
@@ -80,6 +61,18 @@ export const PATCH = route(async (req: NextRequest) => {
       break;
     case "activate":
       await prisma.user.update({ where: { id }, data: { status: "active" } });
+      break;
+    case "verify":
+      await prisma.user.update({ where: { id }, data: { isVerified: true, badgeType: "blue" } });
+      break;
+    case "verify-gold":
+      await prisma.user.update({ where: { id }, data: { isVerified: true, badgeType: "gold" } });
+      break;
+    case "verify-gray":
+      await prisma.user.update({ where: { id }, data: { isVerified: true, badgeType: "gray" } });
+      break;
+    case "unverify":
+      await prisma.user.update({ where: { id }, data: { isVerified: false } });
       break;
     default:
       return bad("Unknown action.");
