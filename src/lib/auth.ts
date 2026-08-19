@@ -258,6 +258,7 @@ export async function getMe() {
     role: user.role,
     status: user.status,
     isVerified: user.isVerified,
+    badgeType: (user.badgeType ?? "blue") as "blue" | "gold" | "gray",
     isPrivate: user.isPrivate,
     emailVerified: user.emailVerified,
     theme: user.theme as "dark" | "light" | "system",
