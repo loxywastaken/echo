@@ -66,7 +66,7 @@ export function RightRail() {
         <Link href="/clips" className="hover:underline">Clips</Link>
         <Link href="/guidelines" className="hover:underline">Guidelines</Link>
         <Link href="/settings" className="hover:underline">Settings</Link>
-        <span className="mt-2 block w-full text-faint/70">Â© {new Date().getFullYear()} Echo</span>
+        <span className="mt-2 block w-full text-faint/70">Â© {new Date().getFullYear()} Vortex</span>
       </div>
     </div>
   );
