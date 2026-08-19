@@ -212,7 +212,7 @@ export function ProfileClient({ username }: { username: string }) {
           <EmptyState
             icon={<Grid3x3 size={24} />}
             title={tab === "saved" ? "No saved posts" : tab === "tagged" ? "No tagged posts" : "No posts yet"}
-            hint={isSelf && tab === "posts" ? "Share your first moment on Echo." : undefined}
+            hint={isSelf && tab === "posts" ? "Share your first moment on Vortex." : undefined}
           />
         ) : (
           <PostGrid posts={posts} onOpen={setActive} />
