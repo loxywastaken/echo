@@ -103,12 +103,12 @@ export function SearchModal({ open, onClose }: { open: boolean; onClose: () => v
                       className="press flex w-full items-center gap-3 rounded-xl px-2 py-2.5 text-left hover:bg-surface-2"
                     >
                       <Clock size={18} className="text-faint" />
-                      <span className="text-sm">{r}</span>
+          <span className="text-sm">{r}</span>
                     </button>
                   ))}
                 </>
               ) : (
-                <p className="px-2 py-8 text-center text-sm text-faint">Search Echo for people, hashtags and places.</p>
+                <p className="px-2 py-8 text-center text-sm text-faint">Search Vortex for people, hashtags and places.</p>
               )}
             </div>
           ) : loading ? (
