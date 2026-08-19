@@ -86,7 +86,7 @@ export function CreateModal({ open, onClose }: { open: boolean; onClose: () => v
       );
       window.dispatchEvent(new CustomEvent("echo:post-created", { detail: post }));
       refresh();
-      toast("Posted ✨", "success");
+      toast("Posted â¨", "success");
       close();
     } catch (e: any) {
       toast(e?.message || "Could not publish", "error");
@@ -124,7 +124,7 @@ export function CreateModal({ open, onClose }: { open: boolean; onClose: () => v
             <button onClick={() => inputRef.current?.click()} className="flex flex-col items-center gap-3 text-muted">
               <UploadCloud size={54} strokeWidth={1.3} className={cn(dragging && "text-accent")} />
               <span className="font-medium text-text">Drag photos & videos here</span>
-              <span className="text-xs text-faint">or click to browse · up to 10 files</span>
+              <span className="text-xs text-faint">or click to browse Â· up to 10 files</span>
               {progress !== null && (
                 <div className="mt-2 h-1.5 w-40 overflow-hidden rounded-full bg-surface-2">
                   <div className="h-full bg-accent-gradient transition-all" style={{ width: `${(progress || 0) * 100}%` }} />
@@ -180,7 +180,7 @@ export function CreateModal({ open, onClose }: { open: boolean; onClose: () => v
           <textarea
             value={caption}
             onChange={(e) => setCaption(e.target.value)}
-            placeholder="Write a caption…  Use #hashtags and @mentions"
+            placeholder="Write a captionâ¦  Use #hashtags and @mentions"
             rows={4}
             className="input-base resize-none"
             maxLength={2200}
