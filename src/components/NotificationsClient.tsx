@@ -34,7 +34,7 @@ function label(n: NotificationItem): string {
     case "mention": return "mentioned you";
     case "tag": return "tagged you in a post";
     case "message": return n.message ? `sent: ${n.message}` : "sent you a message";
-    case "admin": return n.message || "Notice from Echo";
+    case "admin": return n.message || "Notice from Vortex";
     default: return "interacted with you";
   }
 }
