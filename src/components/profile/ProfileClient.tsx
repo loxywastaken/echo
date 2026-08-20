@@ -41,6 +41,7 @@ type Profile = {
   website: string | null;
   location: string | null;
   isVerified: boolean;
+  badgeType: "blue" | "gold" | "gray";
   isPrivate: boolean;
   status: string;
   counts: { posts: number; followers: number; following: number };
