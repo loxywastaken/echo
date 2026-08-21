@@ -267,9 +267,9 @@ function UsersTab() {
                   {u.status === "active" && <Button size="sm" variant="subtle" onClick={() => act(u.id, "suspend")}>Suspend</Button>}
                   {u.status !== "banned" && <Button size="sm" variant="danger" onClick={() => act(u.id, "ban")}>Ban</Button>}
                   <>
-                    <Button size="sm" variant={u.isVerified && u.badgeType === "blue" ? "primary" : "ghost"} onClick={() => act(u.id, "verify")}>Blue â</Button>
-                    <Button size="sm" variant={u.isVerified && u.badgeType === "gold" ? "primary" : "ghost"} onClick={() => act(u.id, "verify-gold")}>Gold â</Button>
-                    <Button size="sm" variant={u.isVerified && u.badgeType === "gray" ? "primary" : "ghost"} onClick={() => act(u.id, "verify-gray")}>Gray â</Button>
+                    <Button size="sm" variant={u.isVerified && u.badgeType === "blue" ? "primary" : "ghost"} onClick={() => act(u.id, "verify")}>Blue</Button>
+                    <Button size="sm" variant={u.isVerified && u.badgeType === "gold" ? "primary" : "ghost"} onClick={() => act(u.id, "verify-gold")}>Gold</Button>
+                    <Button size="sm" variant={u.isVerified && u.badgeType === "gray" ? "primary" : "ghost"} onClick={() => act(u.id, "verify-gray")}>Gray</Button>
                     {u.isVerified && <Button size="sm" variant="ghost" onClick={() => act(u.id, "unverify")}>Unverify</Button>}
                   </>
                 </div>
