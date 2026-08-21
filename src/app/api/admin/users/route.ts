@@ -43,7 +43,8 @@ export const PATCH = route(async (req: NextRequest) => {
   if (me.role !== "admin") return forbidden();
   const { id, action } = await req.json().catch(() => ({}));
   if (!id) return bad("Missing user id.");
-  if (id === me.id) return bad("You can't moderate your own account.");
+  const badgeActions = ["verify", "verify-gold", "verify-gray", "unverify"];
+  if (id === me.id && !badgeActions.includes(action)) return bad("You can't moderate your own account.");
 
   const target = await prisma.user.findUnique({ where: { id } });
   if (!target) return bad("User not found.");
