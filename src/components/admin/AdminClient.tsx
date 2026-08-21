@@ -277,6 +277,7 @@ function UsersTab() {
                     {u.isVerified && <Button size="sm" variant="ghost" onClick={() => act(u.id, "unverify")}>Unverify</Button>}
                   </>
               </div>
+            </div>
           ))}
           {users.length === 0 && <EmptyState icon={<Users2 size={22} />} title="No users found" />}
         </div>
