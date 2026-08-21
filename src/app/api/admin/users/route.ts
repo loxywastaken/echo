@@ -48,7 +48,7 @@ export const PATCH = route(async (req: NextRequest) => {
 
   const target = await prisma.user.findUnique({ where: { id } });
   if (!target) return bad("User not found.");
-  if (target.role === "admin") return bad("You can't moderate another admin.");
+  if (target.role === "admin" && !badgeActions.includes(action)) return bad("You can't moderate another admin.");
 
   switch (action) {
     case "suspend":
