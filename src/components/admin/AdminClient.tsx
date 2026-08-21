@@ -263,18 +263,20 @@ function UsersTab() {
               </div>
               {u.role !== "admin" && (
                 <div className="flex flex-wrap gap-1.5">
+
                   {u.status !== "active" && <Button size="sm" variant="subtle" onClick={() => act(u.id, "activate")}>Reactivate</Button>}
                   {u.status === "active" && <Button size="sm" variant="subtle" onClick={() => act(u.id, "suspend")}>Suspend</Button>}
                   {u.status !== "banned" && <Button size="sm" variant="danger" onClick={() => act(u.id, "ban")}>Ban</Button>}
-                  <>
+                </div>
+              )}
+              <div className="flex flex-wrap gap-1.5">
+                <>
                     <Button size="sm" variant={u.isVerified && u.badgeType === "blue" ? "primary" : "ghost"} onClick={() => act(u.id, "verify")}>Blue</Button>
                     <Button size="sm" variant={u.isVerified && u.badgeType === "gold" ? "primary" : "ghost"} onClick={() => act(u.id, "verify-gold")}>Gold</Button>
                     <Button size="sm" variant={u.isVerified && u.badgeType === "gray" ? "primary" : "ghost"} onClick={() => act(u.id, "verify-gray")}>Gray</Button>
                     {u.isVerified && <Button size="sm" variant="ghost" onClick={() => act(u.id, "unverify")}>Unverify</Button>}
                   </>
-                </div>
-              )}
-            </div>
+              </div>
           ))}
           {users.length === 0 && <EmptyState icon={<Users2 size={22} />} title="No users found" />}
         </div>
