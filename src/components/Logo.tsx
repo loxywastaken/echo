@@ -1,11 +1,10 @@
 import { cn } from "@/lib/utils";
 
 /**
- * Echo mark — an original "echo ripple": a source dot emitting three concentric
- * sound-wave arcs. Deliberately unlike any camera/aperture glyph.
+ * Vortex mark — rounded square containing a spiral vortex.
+ * Official brand mark.
  */
 export function LogoMark({ size = 32, className }: { size?: number; className?: string }) {
-  const id = "echoGrad";
   return (
     <svg
       width={size}
@@ -15,19 +14,48 @@ export function LogoMark({ size = 32, className }: { size?: number; className?: 
       className={className}
       aria-hidden="true"
     >
-      <defs>
-        <linearGradient id={id} x1="4" y1="4" x2="28" y2="28" gradientUnits="userSpaceOnUse">
-          <stop stopColor="rgb(var(--accent))" />
-          <stop offset="1" stopColor="rgb(var(--accent-2))" />
-        </linearGradient>
-      </defs>
-      <rect width="32" height="32" rx="9" fill="url(#echoGrad)" opacity="0.14" />
-      {/* source dot */}
-      <circle cx="10" cy="16" r="2.4" fill="url(#echoGrad)" />
-      {/* three ripple arcs opening right */}
-      <path d="M14 11 A5.6 5.6 0 0 1 14 21" stroke="url(#echoGrad)" strokeWidth="2.3" strokeLinecap="round" />
-      <path d="M17.5 8 A9.4 9.4 0 0 1 17.5 24" stroke="url(#echoGrad)" strokeWidth="2.3" strokeLinecap="round" opacity="0.72" />
-      <path d="M21 5.5 A12.8 12.8 0 0 1 21 26.5" stroke="url(#echoGrad)" strokeWidth="2.3" strokeLinecap="round" opacity="0.42" />
+      {/* Outer rounded square frame */}
+      <rect
+        x="1.5"
+        y="1.5"
+        width="29"
+        height="29"
+        rx="8"
+        stroke="currentColor"
+        strokeWidth="2.75"
+        fill="none"
+      />
+      {/* Spiral arms – clean geometric approximation of the brand mark */}
+      <path
+        d="M16 8.5c4.14 0 7.5 3.36 7.5 7.5 0 3.05-1.82 5.68-4.45 6.85"
+        stroke="currentColor"
+        strokeWidth="2.1"
+        strokeLinecap="round"
+        fill="none"
+      />
+      <path
+        d="M16 10.5c3.04 0 5.5 2.46 5.5 5.5 0 2.24-1.34 4.17-3.27 5.03"
+        stroke="currentColor"
+        strokeWidth="2.1"
+        strokeLinecap="round"
+        fill="none"
+      />
+      <path
+        d="M16 12.5c1.93 0 3.5 1.57 3.5 3.5 0 1.42-.85 2.65-2.08 3.2"
+        stroke="currentColor"
+        strokeWidth="2.1"
+        strokeLinecap="round"
+        fill="none"
+      />
+      <path
+        d="M16 14.5c.83 0 1.5.67 1.5 1.5 0 .53-.28.99-.7 1.25"
+        stroke="currentColor"
+        strokeWidth="2.1"
+        strokeLinecap="round"
+        fill="none"
+      />
+      {/* Center */}
+      <circle cx="16" cy="16" r="1.35" fill="currentColor" />
     </svg>
   );
 }
@@ -42,7 +70,7 @@ export function Logo({
   className?: string;
 }) {
   return (
-    <span className={cn("inline-flex items-center gap-2.5 select-none", className)}>
+    <span className={cn("inline-flex items-center gap-2.5 select-none text-text", className)}>
       <LogoMark size={size} />
       {withWord && (
         <span
