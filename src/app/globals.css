@@ -92,19 +92,18 @@ body {
     background-clip: text;
     color: transparent;
   }
-  /* Primary "fill": a frosted white glass tint. Kept dark enough that
-     white button text stays crisp (~#3d3d3d over black). */
+  /* Primary "fill": a frosted white glass tint. */
   .bg-accent-gradient {
     background: linear-gradient(180deg, rgb(255 255 255 / 0.26), rgb(255 255 255 / 0.10));
-    -webkit-backdrop-filter: blur(10px) saturate(150%);
-    backdrop-filter: blur(10px) saturate(150%);
+    -webkit-backdrop-filter: blur(8px) saturate(140%);
+    backdrop-filter: blur(8px) saturate(140%);
   }
 
-  /* Frosted glass panel */
+  /* Frosted glass panel — slightly lighter blur for perf */
   .glass {
     background: rgb(255 255 255 / 0.055);
-    -webkit-backdrop-filter: blur(22px) saturate(160%);
-    backdrop-filter: blur(22px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(150%);
+    backdrop-filter: blur(16px) saturate(150%);
     box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.08);
   }
   [data-theme="light"] .glass {
@@ -114,13 +113,13 @@ body {
 
   /* Buttons: tactile press feedback */
   .press {
-    transition: transform 0.12s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.12s, background 0.15s;
+    transition: transform 0.1s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.1s, background 0.12s;
   }
   .press:active {
-    transform: scale(0.94);
+    transform: scale(0.95);
   }
 
-  /* Story ring — brushed monochrome (white → silver → graphite) */
+  /* Story ring — brushed monochrome */
   .story-ring {
     background: conic-gradient(
       from 180deg,
@@ -151,7 +150,7 @@ body {
       rgb(255 255 255 / 0.08),
       transparent
     );
-    animation: shimmer 1.6s infinite;
+    animation: shimmer 1.5s infinite;
   }
   @keyframes shimmer {
     100% {
@@ -159,23 +158,23 @@ body {
     }
   }
 
-  /* Frosted card — translucent white over black, white hairline edge */
+  /* Frosted card */
   .card {
     background: rgb(255 255 255 / 0.045);
-    -webkit-backdrop-filter: blur(20px) saturate(150%);
-    backdrop-filter: blur(20px) saturate(150%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    backdrop-filter: blur(14px) saturate(140%);
     border: 1px solid rgb(255 255 255 / 0.10);
     border-radius: 1rem;
     box-shadow:
       inset 0 1px 0 rgb(255 255 255 / 0.05),
-      0 10px 34px -14px rgb(0 0 0 / 0.85);
+      0 8px 28px -12px rgb(0 0 0 / 0.8);
   }
   [data-theme="light"] .card {
     background: rgb(0 0 0 / 0.025);
     border-color: rgb(0 0 0 / 0.10);
     box-shadow:
       inset 0 1px 0 rgb(255 255 255 / 0.6),
-      0 10px 30px -14px rgb(0 0 0 / 0.2);
+      0 8px 24px -12px rgb(0 0 0 / 0.18);
   }
 
   /* Frosted input */
@@ -187,9 +186,9 @@ body {
     width: 100%;
     color: rgb(var(--text));
     outline: none;
-    -webkit-backdrop-filter: blur(12px);
-    backdrop-filter: blur(12px);
-    transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    transition: border-color 0.12s, box-shadow 0.12s, background 0.12s;
   }
   [data-theme="light"] .input-base {
     background: rgb(0 0 0 / 0.03);
@@ -209,7 +208,6 @@ body {
     background: rgb(0 0 0 / 0.04);
   }
 
-  /* Primary fill under light theme → solid graphite so white text reads */
   [data-theme="light"] .bg-accent-gradient {
     background: linear-gradient(180deg, #26262b, #16161a);
     -webkit-backdrop-filter: none;
