@@ -33,26 +33,26 @@ export function StoriesBar() {
   const others = trays.filter((t) => t.author.id !== user?.id);
 
   return (
-    <div className="border-b border-border">
-      <div className="no-scrollbar flex gap-4 overflow-x-auto px-4 py-4">
+    <div className="border-b border-border/80">
+      <div className="no-scrollbar flex gap-3.5 overflow-x-auto px-3 py-3.5 sm:px-4">
         {/* Your story */}
         <button
           onClick={() => (myTray ? setStart(trays.indexOf(myTray)) : setComposer(true))}
           className="press flex w-16 shrink-0 flex-col items-center gap-1.5"
         >
           <div className="relative">
-            <Avatar src={user?.avatar} name={user?.displayName || "You"} size={60} ring={myTray?.hasUnseen ? "story" : "seen"} />
+            <Avatar src={user?.avatar} name={user?.displayName || "You"} size={56} ring={myTray?.hasUnseen ? "story" : "seen"} />
             <span className="absolute -bottom-0.5 -right-0.5 grid h-5 w-5 place-items-center rounded-full border-2 border-bg bg-accent-gradient text-white">
               <Plus size={12} strokeWidth={3} />
             </span>
           </div>
-          <span className="w-full truncate text-center text-xs text-muted">Your story</span>
+          <span className="w-full truncate text-center text-[11px] font-medium text-muted">Your story</span>
         </button>
 
         {loading &&
           Array.from({ length: 6 }).map((_, i) => (
             <div key={i} className="flex w-16 shrink-0 flex-col items-center gap-1.5">
-              <div className="skeleton h-[60px] w-[60px] rounded-full" />
+              <div className="skeleton h-[56px] w-[56px] rounded-full" />
               <div className="skeleton h-2.5 w-12 rounded" />
             </div>
           ))}
@@ -66,10 +66,10 @@ export function StoriesBar() {
             <Avatar
               src={tray.author.avatar}
               name={tray.author.displayName}
-              size={60}
+              size={56}
               ring={tray.hasUnseen ? "story" : "seen"}
             />
-            <span className={cn("w-full truncate text-center text-xs", tray.hasUnseen ? "text-text" : "text-muted")}>
+            <span className={cn("w-full truncate text-center text-[11px] font-medium", tray.hasUnseen ? "text-text" : "text-muted")}>
               {tray.author.username}
             </span>
           </button>

@@ -68,7 +68,7 @@ function Overview() {
 
       {/* activity chart */}
       <div className="card p-5">
-        <p className="mb-4 text-sm font-semibold text-muted">Activity â last 7 days</p>
+        <p className="mb-4 text-sm font-semibold text-muted">Activity — last 7 days</p>
         <div className="flex items-end justify-between gap-2" style={{ height: 140 }}>
           {data.series.map((s: any, i: number) => (
             <div key={i} className="flex flex-1 flex-col items-center gap-1">
@@ -98,7 +98,7 @@ function Overview() {
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm">{p.caption || "(no caption)"}</p>
-                    <p className="text-xs text-faint">@{p.author?.username} Â· {timeAgo(p.createdAt)} {p.status === "removed" && <span className="text-danger">Â· removed</span>}</p>
+                    <p className="text-xs text-faint">@{p.author?.username} · {timeAgo(p.createdAt)} {p.status === "removed" && <span className="text-danger">· removed</span>}</p>
                   </div>
                 </Link>
               ))}
@@ -153,7 +153,7 @@ function Reports() {
           <div className="mb-3 flex items-center gap-2 text-xs">
             <span className="rounded-full bg-danger/15 px-2 py-0.5 font-semibold text-danger">{r.targetType}</span>
             <span className="text-muted">{r.reason}</span>
-            <span className="ml-auto text-faint">reported by @{r.reporter?.username} Â· {timeAgo(r.createdAt)}</span>
+            <span className="ml-auto text-faint">reported by @{r.reporter?.username} · {timeAgo(r.createdAt)}</span>
           </div>
 
           <div className="mb-3 flex items-center gap-3 rounded-xl bg-surface-2 p-3">
@@ -170,7 +170,7 @@ function Reports() {
             )}
             {r.targetType === "comment" && r.comment && (
               <div className="min-w-0 flex-1">
-                <p className="text-sm">â{r.comment.body}â</p>
+                <p className="text-sm">“{r.comment.body}”</p>
                 <p className="text-xs text-faint">by @{r.comment.author?.username}</p>
               </div>
             )}
@@ -259,7 +259,7 @@ function UsersTab() {
                   {u.role === "admin" && <span className="rounded bg-accent/15 px-1.5 text-xs text-accent">admin</span>}
                   <span className={cn("rounded px-1.5 text-xs", u.status === "active" ? "bg-success/15 text-success" : u.status === "suspended" ? "bg-warn/15 text-warn" : "bg-danger/15 text-danger")}>{u.status}</span>
                 </p>
-                <p className="truncate text-xs text-faint">{u.email} Â· {formatCount(u.followers)} followers Â· {u.posts} posts</p>
+                <p className="truncate text-xs text-faint">{u.email} · {formatCount(u.followers)} followers · {u.posts} posts</p>
               </div>
               {u.role !== "admin" && (
                 <div className="flex flex-wrap gap-1.5">

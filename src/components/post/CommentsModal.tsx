@@ -111,7 +111,7 @@ export function CommentsModal({
                 value={text}
                 onChange={(e) => setText(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && send()}
-                placeholder="Add a commentâ¦"
+                placeholder="Add a comment…"
                 className="input-base flex-1"
               />
               <button

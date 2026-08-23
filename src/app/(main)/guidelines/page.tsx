@@ -1,7 +1,7 @@
 import { LogoMark } from "@/components/Logo";
 import { Heart, Shield, Users, Flag, EyeOff, Sparkles } from "lucide-react";
 
-export const metadata = { title: "Community Guidelines â Vortex" };
+export const metadata = { title: "Community Guidelines — Vortex" };
 
 const rules = [
   { icon: Heart, title: "Be kind", body: "Treat others with respect. Harassment, hate speech, bullying, and threats have no place on Vortex." },
@@ -9,7 +9,7 @@ const rules = [
   { icon: Shield, title: "Stay authentic", body: "Be yourself. Don't impersonate others, spread misinformation, or run scams and spam." },
   { icon: Users, title: "Respect privacy", body: "Don't share others' private information without consent, and honour people's boundaries." },
   { icon: Flag, title: "Report, don't retaliate", body: "See something wrong? Use the report tools. Our team reviews reports and takes action." },
-  { icon: Sparkles, title: "Share what echoes", body: "Post the moments worth repeating â creativity, community, and genuine connection." },
+  { icon: Sparkles, title: "Share what echoes", body: "Post the moments worth repeating — creativity, community, and genuine connection." },
 ];
 
 export default function GuidelinesPage() {

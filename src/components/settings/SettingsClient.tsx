@@ -265,8 +265,8 @@ function SecuritySection({ settings, onUpdate }: { settings: Settings; onUpdate:
                 <div key={s.id} className="flex items-center gap-3 rounded-xl border border-border p-3">
                   <Monitor size={20} className="text-muted" />
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium">{s.device} {s.current && <span className="text-xs text-success">Â· This device</span>}</p>
-                    <p className="text-xs text-faint">{s.ip || "unknown ip"} Â· active {timeAgo(s.lastActive)}</p>
+                    <p className="text-sm font-medium">{s.device} {s.current && <span className="text-xs text-success">· This device</span>}</p>
+                    <p className="text-xs text-faint">{s.ip || "unknown ip"} · active {timeAgo(s.lastActive)}</p>
                   </div>
                   {!s.current && <Button size="sm" variant="subtle" onClick={() => revoke(s.id)}>Revoke</Button>}
                 </div>

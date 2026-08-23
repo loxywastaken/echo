@@ -117,7 +117,7 @@ export function PostCard({ post: initial, onDeleted }: { post: Post; onDeleted?:
   return (
     <article className="border-b border-border pb-3 sm:card sm:mb-5 sm:overflow-hidden sm:pb-0">
       {/* header */}
-      <header className="flex items-center gap-3 px-3 py-3 sm:px-4">
+      <header className="flex items-center gap-3 px-3 py-2.5 sm:px-4">
         <Link href={`/${post.author.username}`}>
           <Avatar src={post.author.avatar} name={post.author.displayName} size={38} ring={post.isClip ? null : undefined} />
         </Link>
@@ -127,7 +127,7 @@ export function PostCard({ post: initial, onDeleted }: { post: Post; onDeleted?:
               {post.author.username}
             </Link>
             {post.author.isVerified && <VerifiedBadge size={14} type={post.author.badgeType || "blue"} />}
-            <span className="text-faint">Â·</span>
+            <span className="text-faint">·</span>
             <span className="shrink-0 text-xs text-faint">{timeAgo(post.createdAt)}</span>
           </div>
           {post.location && (
@@ -152,7 +152,7 @@ export function PostCard({ post: initial, onDeleted }: { post: Post; onDeleted?:
       </div>
 
       {/* actions */}
-      <div className="flex items-center gap-4 px-3 pt-3 sm:px-4">
+      <div className="flex items-center gap-4 px-3 pt-2.5 sm:px-4">
         <button onClick={() => toggleLike()} className="press" aria-label="Like">
           <Heart size={25} className={cn(liked ? "fill-danger text-danger" : "text-text hover:text-muted")} />
         </button>
@@ -168,7 +168,7 @@ export function PostCard({ post: initial, onDeleted }: { post: Post; onDeleted?:
       </div>
 
       {/* counts + caption */}
-      <div className="space-y-1 px-3 pt-2 text-sm sm:px-4">
+      <div className="space-y-1.5 px-3 pt-1.5 pb-1 text-sm sm:px-4">
         {likeCount > 0 && <p className="font-semibold">{formatCount(likeCount)} {likeCount === 1 ? "like" : "likes"}</p>}
         {(post.caption || caption) && (
           <p className={cn(!expand && "line-clamp-3")}>
@@ -224,7 +224,7 @@ export function PostCard({ post: initial, onDeleted }: { post: Post; onDeleted?:
             onChange={(e) => setCaption(e.target.value)}
             rows={5}
             className="input-base resize-none"
-            placeholder="Write a captionâ¦"
+            placeholder="Write a caption…"
           />
           <div className="flex justify-end gap-2">
             <Button variant="ghost" onClick={() => { setCaption(post.caption); setEditing(false); }}>Cancel</Button>

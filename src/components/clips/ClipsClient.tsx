@@ -176,7 +176,7 @@ function ClipItem({ clip, muted, setMuted }: { clip: Post; muted: boolean; setMu
         </Link>
         {clip.caption && <p className="mb-1.5 line-clamp-2 text-sm">{clip.caption}</p>}
         <p className="flex items-center gap-1.5 text-xs text-white/80">
-          <Music2 size={13} /> {clip.audioName || `Original audio Â· ${clip.author.username}`}
+          <Music2 size={13} /> {clip.audioName || `Original audio · ${clip.author.username}`}
         </p>
       </div>
 

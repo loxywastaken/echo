@@ -29,7 +29,7 @@ function LoginForm() {
     try {
       const res = await api.post("/api/auth/login", { identifier, password, rememberMe: remember });
       await refresh();
-      if (res.suspended) toast("Your account is suspended â some actions are limited.", "info");
+      if (res.suspended) toast("Your account is suspended — some actions are limited.", "info");
       if (isAddAccount) {
         toast("Account added! You can now switch between accounts.", "success");
       }
@@ -61,7 +61,7 @@ function LoginForm() {
           : "Sign in to continue to Vortex."}
       </p>
 
-      <form onSubmit={submit} className="mt-7 space-y-4">
+      <form onSubmit={submit} className="mt-8 space-y-4">
         <Input
           label="Email or username"
           autoComplete="username"
@@ -76,7 +76,7 @@ function LoginForm() {
           autoComplete="current-password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          placeholder="â¢â¢â¢â¢â¢â¢â¢â¢"
+          placeholder="••••••••"
           required
         />
         <div className="flex items-center justify-between">
@@ -102,10 +102,10 @@ function LoginForm() {
             </Link>
           </p>
 
-          <div className="mt-8 rounded-xl border border-border bg-surface/60 p-3 text-center text-xs text-faint">
-            Demo login â <span className="text-muted">maya</span> / <span className="text-muted">password123</span>
+          <div className="mt-8 rounded-xl border border-border/80 bg-surface/50 p-3.5 text-center text-xs text-faint">
+            Demo login — <span className="text-muted">maya</span> / <span className="text-muted">password123</span>
             <br />
-            Admin â <span className="text-muted">admin</span> / <span className="text-muted">password123</span>
+            Admin — <span className="text-muted">admin</span> / <span className="text-muted">password123</span>
           </div>
         </>
       )}

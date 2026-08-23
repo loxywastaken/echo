@@ -73,7 +73,7 @@ export function MessagesClient({ activeId }: { activeId?: string }) {
                   <p className={cn("truncate text-xs", c.unread ? "font-semibold text-text" : "text-faint")}>
                     {c.lastMessage?.isMine ? "You: " : ""}
                     {c.lastMessage?.deleted ? "Message deleted" : c.lastMessage?.body || (c.lastMessage?.mediaUrl ? "Sent an attachment" : "No messages yet")}
-                    {c.lastMessage && <span className="text-faint"> Â· {timeAgo(c.lastMessage.createdAt)}</span>}
+                    {c.lastMessage && <span className="text-faint"> · {timeAgo(c.lastMessage.createdAt)}</span>}
                   </p>
                 </div>
                 {c.unread > 0 && <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-accent-gradient" />}

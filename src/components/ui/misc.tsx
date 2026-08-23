@@ -3,9 +3,9 @@ import { Loader2 } from "lucide-react";
 
 /**
  * X.com-style verification badge with three tiers:
- * - "blue" (default): Individual verified â blue scalloped seal
- * - "gold": Business / organisation â gold scalloped seal
- * - "gray": Government / official â gray scalloped seal
+ * - "blue" (default): Individual verified — blue scalloped seal
+ * - "gold": Business / organisation — gold scalloped seal
+ * - "gray": Government / official — gray scalloped seal
  */
 export function VerifiedBadge({
   size = 15,
@@ -65,15 +65,17 @@ export function EmptyState({
   action?: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-col items-center justify-center gap-3 px-6 py-16 text-center animate-fade-in">
+    <div className="flex flex-col items-center justify-center gap-3.5 px-6 py-20 text-center animate-fade-in">
       {icon && (
-        <div className="grid h-16 w-16 place-items-center rounded-2xl border border-border bg-surface text-muted">
+        <div className="grid h-14 w-14 place-items-center rounded-2xl border border-border/80 bg-surface/80 text-muted shadow-soft">
           {icon}
         </div>
       )}
-      <h3 className="text-lg font-semibold text-text">{title}</h3>
-      {hint && <p className="max-w-xs text-sm text-muted">{hint}</p>}
-      {action}
+      <div className="space-y-1.5">
+        <h3 className="text-base font-semibold tracking-tight text-text">{title}</h3>
+        {hint && <p className="max-w-[260px] text-sm leading-relaxed text-muted">{hint}</p>}
+      </div>
+      {action && <div className="mt-1">{action}</div>}
     </div>
   );
 }

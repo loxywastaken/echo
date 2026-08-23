@@ -70,7 +70,7 @@ export function AccountSwitcher({ compact = false }: { compact?: boolean }) {
       setOpen(false);
       router.refresh();
     } catch {
-      // Session expired â remove from list
+      // Session expired — remove from list
       setAccounts((prev) => prev.filter((a) => a.userId !== targetUserId));
     } finally {
       setSwitching(false);
@@ -159,7 +159,7 @@ export function AccountSwitcher({ compact = false }: { compact?: boolean }) {
                 </button>
               ))
             ) : (
-              /* Single account â show current user */
+              /* Single account — show current user */
               <div className="flex items-center gap-3 px-4 py-2.5">
                 <Avatar src={user.avatar} name={user.displayName} size={38} />
                 <span className="min-w-0 flex-1">

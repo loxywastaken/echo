@@ -9,7 +9,7 @@ import { useAuth } from "@/context/AuthContext";
 export function TopBar({ onSearch }: { onSearch: () => void }) {
   const { user } = useAuth();
   return (
-    <header className="sticky top-0 z-40 flex items-center justify-between border-b border-border glass px-4 py-3 md:hidden">
+    <header className="sticky top-0 z-40 flex items-center justify-between border-b border-border/80 glass px-3 py-2.5 md:hidden">
       <div className="flex items-center gap-2">
         {user && <AccountSwitcher compact />}
         <Link href="/">
@@ -17,7 +17,7 @@ export function TopBar({ onSearch }: { onSearch: () => void }) {
         </Link>
       </div>
       <div className="flex items-center gap-1.5">
-        <button onClick={onSearch} className="press grid h-9 w-9 place-items-center rounded-full text-text" aria-label="Search">
+        <button onClick={onSearch} className="press grid h-9 w-9 place-items-center rounded-full text-text hover:bg-surface-2" aria-label="Search">
           <Search size={22} />
         </button>
         <Link href="/notifications" className="press relative grid h-9 w-9 place-items-center rounded-full text-text" aria-label="Notifications">
@@ -26,7 +26,7 @@ export function TopBar({ onSearch }: { onSearch: () => void }) {
             <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-accent-gradient" />
           )}
         </Link>
-        <Link href="/messages" className="press grid h-9 w-9 place-items-center rounded-full text-text" aria-label="Messages">
+        <Link href="/messages" className="press grid h-9 w-9 place-items-center rounded-full text-text hover:bg-surface-2" aria-label="Messages">
           <MessageCircle size={22} />
         </Link>
       </div>

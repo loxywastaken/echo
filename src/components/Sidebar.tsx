@@ -73,8 +73,10 @@ export function Sidebar({ onCreate, onSearch }: { onCreate: () => void; onSearch
               </span>
             </>
           );
-          const cls =
-            "group press flex items-center gap-4 rounded-xl px-3 py-2.5 transition hover:bg-surface-2";
+          const cls = cn(
+            "group press flex items-center gap-4 rounded-xl px-3 py-2.5 transition",
+            active ? "bg-surface-2 text-text" : "hover:bg-surface-2"
+          );
           return it.href ? (
             <Link key={it.label} href={it.href} className={cls}>
               {content}

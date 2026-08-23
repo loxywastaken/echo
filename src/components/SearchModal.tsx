@@ -71,7 +71,7 @@ export function SearchModal({ open, onClose }: { open: boolean; onClose: () => v
             autoFocus
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="Search people, tags, placesâ¦"
+            placeholder="Search people, tags, places…"
             className="flex-1 bg-transparent text-sm outline-none"
           />
           {q && (
@@ -128,7 +128,7 @@ export function SearchModal({ open, onClose }: { open: boolean; onClose: () => v
                     <p className="flex items-center gap-1 text-sm font-semibold">
                       {u.username} {u.isVerified && <VerifiedBadge size={13} type={u.badgeType || "blue"} />}
                     </p>
-                    <p className="truncate text-xs text-faint">{u.displayName} Â· {formatCount(u.followers)} followers</p>
+                    <p className="truncate text-xs text-faint">{u.displayName} · {formatCount(u.followers)} followers</p>
                   </div>
                 </button>
               ))}
@@ -152,7 +152,7 @@ export function SearchModal({ open, onClose }: { open: boolean; onClose: () => v
                 </button>
               ))}
               {res.people.length + res.hashtags.length + res.locations.length === 0 && (
-                <p className="py-12 text-center text-sm text-faint">No results for â{q}â.</p>
+                <p className="py-12 text-center text-sm text-faint">No results for “{q}”.</p>
               )}
             </div>
           ) : null}

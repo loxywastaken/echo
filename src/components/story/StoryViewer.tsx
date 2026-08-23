@@ -217,7 +217,7 @@ export function StoryViewer({
                 onKeyDown={(e) => e.key === "Enter" && sendReply()}
                 onFocus={() => setPaused(true)}
                 onBlur={() => setPaused(false)}
-                placeholder={`Reply to ${story.author.username}â¦`}
+                placeholder={`Reply to ${story.author.username}…`}
                 className="flex-1 rounded-full border border-white/30 bg-transparent px-4 py-2 text-sm text-white placeholder:text-white/50 focus:outline-none"
               />
               <button onClick={() => react("â¤ï¸")} className="press text-white" aria-label="React">

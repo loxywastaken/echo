@@ -23,7 +23,7 @@ function Verify() {
       {state === "loading" && (
         <>
           <Loader2 size={40} className="mx-auto animate-spin text-accent" />
-          <p className="mt-4 text-sm text-muted">Verifying your emailâ¦</p>
+          <p className="mt-4 text-sm text-muted">Verifying your email…</p>
         </>
       )}
       {state === "ok" && (

@@ -17,10 +17,10 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         />
         <Logo size={40} />
         <div>
-          <h1 className="max-w-md font-display text-5xl font-extrabold leading-tight tracking-tight">
+          <h1 className="max-w-md font-display text-5xl font-extrabold leading-[1.1] tracking-tight">
             Dive into the <span className="text-gradient">vortex</span>.
           </h1>
-          <p className="mt-4 max-w-sm text-lg text-muted">
+          <p className="mt-5 max-w-sm text-lg leading-relaxed text-muted">
             A calmer place for the moments worth sharing. Post, follow, message, and discover —
             beautifully.
           </p>
@@ -29,7 +29,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       </div>
 
       {/* Form area */}
-      <div className="flex w-full flex-col items-center justify-center px-5 py-10 lg:w-1/2">
+      <div className="flex w-full flex-col items-center justify-center px-5 py-12 lg:w-1/2">
         <div className="w-full max-w-sm">
           <div className="mb-8 flex justify-center lg:hidden">
             <Logo size={34} />

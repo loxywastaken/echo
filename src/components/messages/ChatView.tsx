@@ -177,7 +177,7 @@ export function ChatView({ conversationId, onBack }: { conversationId: string; o
               {title} {other?.isVerified && <VerifiedBadge size={13} type={other?.badgeType || "blue"} />}
             </p>
             <p className="text-xs text-faint">
-              {typing ? <span className="text-accent">typingâ¦</span> : other?.online ? "Active now" : "Offline"}
+              {typing ? <span className="text-accent">typing…</span> : other?.online ? "Active now" : "Offline"}
             </p>
           </div>
         </Link>
@@ -289,7 +289,7 @@ export function ChatView({ conversationId, onBack }: { conversationId: string; o
             value={text}
             onChange={(e) => onType(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && (e.preventDefault(), send())}
-            placeholder="Messageâ¦"
+            placeholder="Message…"
             className="input-base flex-1 !rounded-full"
           />
           <button onClick={() => send()} disabled={sending || (!text.trim())} className="press grid h-10 w-10 shrink-0 place-items-center rounded-full bg-accent-gradient text-white disabled:opacity-40">

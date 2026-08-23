@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 
 /**
- * Echo mark â an original "echo ripple": a source dot emitting three concentric
+ * Echo mark — an original "echo ripple": a source dot emitting three concentric
  * sound-wave arcs. Deliberately unlike any camera/aperture glyph.
  */
 export function LogoMark({ size = 32, className }: { size?: number; className?: string }) {
